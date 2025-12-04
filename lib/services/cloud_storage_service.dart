@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
-class Cloudstorageservice {
+class CloudStorageService {
   final FirebaseStorage _storage; 
 
-  Cloudstorageservice(this._storage);
+  CloudStorageService(this._storage);
 
   Future<String> uploadFile(File file) async {
 
