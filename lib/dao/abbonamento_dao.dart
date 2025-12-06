@@ -9,11 +9,11 @@ class AbbonamentoDao implements Dao<Abbonamento, String> {
   AbbonamentoDao(this._firestore);
 
   CollectionReference<Abbonamento> get _collection => _firestore
-      .collection(_collectionPath)
-      .withConverter<Abbonamento>(
-        fromFirestore: (snapshot, _) => Abbonamento.fromFirestore(snapshot),
-        toFirestore: (abbonamento, _) => abbonamento.toFirestore(),
-      );
+    .collection(_collectionPath)
+    .withConverter<Abbonamento>(
+      fromFirestore: Abbonamento.fromFirestore,
+      toFirestore: (abbonamento, _) => abbonamento.toFirestore()
+    );
 
   @override
   Future<Abbonamento> create(Abbonamento data) async {
@@ -35,14 +35,17 @@ class AbbonamentoDao implements Dao<Abbonamento, String> {
   @override
   Future<List<Abbonamento>> findAll() async {
     final QuerySnapshot<Abbonamento> snap = await _collection.get();
-    return snap.docs.map((d) => d.data()).toList();
+
+    return snap.docs
+      .map((d) => d.data())
+      .toList();
   }
 
   @override
   Stream<List<Abbonamento>> findAllStream() {
     return _collection.snapshots().map(
       (QuerySnapshot<Abbonamento> query) =>
-          query.docs.map((d) => d.data()).toList(),
+        query.docs.map((d) => d.data()).toList(),
     );
   }
 
@@ -55,9 +58,11 @@ class AbbonamentoDao implements Dao<Abbonamento, String> {
   @override
   Future<Abbonamento> update(Abbonamento data) async {
     final id = data.id;
-    if (id == null) {
+    
+    if (id.isEmpty) {
       throw ArgumentError('Abbonamento.id is required for update');
     }
+    
     final doc = _collection.doc(id);
     await doc.set(data);
     return (await doc.get()).data()!;
