@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Abbonamento {
-  final String id;
+  final String? id;
   final String descrizione;
   final double prezzo;
   final int maxAnnunciVendita;
@@ -9,7 +9,7 @@ class Abbonamento {
   final int durataInMesi;
 
   Abbonamento({
-    required this.id,
+    this.id,
     required this.descrizione,
     required this.prezzo,
     required this.maxAnnunciVendita,
@@ -37,7 +37,6 @@ class Abbonamento {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
       'descrizione': descrizione,
       'prezzo': prezzo,
       'maxAnnunciVendita': maxAnnunciVendita,
@@ -48,7 +47,7 @@ class Abbonamento {
 
   factory Abbonamento.fromMap(Map<String, dynamic> map) {
     return Abbonamento(
-      id: map['id'] as String? ?? '',
+      id: map['id'] as String?,
       descrizione: map['descrizione'] as String? ?? '',
       prezzo: (map['prezzo'] is int)
           ? (map['prezzo'] as int).toDouble()
@@ -59,7 +58,9 @@ class Abbonamento {
     );
   }
 
-  factory Abbonamento.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+  factory Abbonamento.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+  ) {
     final data = snapshot.data() ?? {};
     // Ensure id from document id if not present in data
     final id = (data['id'] as String?) ?? snapshot.id;
