@@ -1,0 +1,96 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../entities/segnalazione.dart';
+import 'dao.dart'; // Assicurati che il file dao.dart (l'interfaccia) sia visibile
+
+class SegnalazioneDao implements Dao<Segnalazione, String> {
+  
+  static const segnalazioneCollection = "segnalazioni";
+  final FirebaseFirestore _firestore;
+
+  SegnalazioneDao(this._firestore);
+
+  @override
+  Future<Segnalazione> create(Segnalazione data) async {
+    final doc = await _firestore.collection(segnalazioneCollection)
+      .add(data.toFirestore());
+
+    final ref = await doc.withConverter(
+      fromFirestore: Segnalazione.fromFirestore, 
+      toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+    ).get();
+
+    return ref.data()!;
+  }
+
+  @override
+  Future<void> deleteById(String id) async {
+    await _firestore.collection(segnalazioneCollection)
+      .doc(id)
+      .delete();
+  }
+
+  @override
+  Future<List<Segnalazione>> findAll() async {
+    final querySnapshot = await _firestore.collection(segnalazioneCollection)
+      .withConverter(
+        fromFirestore: Segnalazione.fromFirestore,
+        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+      ).get();
+
+    return querySnapshot.docs
+      .map((doc) => doc.data())
+      .toList();
+  }
+
+  @override
+  Stream<List<Segnalazione>> findAllStream() {
+    return _firestore.collection(segnalazioneCollection)
+      .withConverter(
+        fromFirestore: Segnalazione.fromFirestore,
+        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+      )
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs
+          .map((doc) => doc.data())
+          .toList();
+      });
+  }
+
+  @override
+  Future<Segnalazione?> findById(String id) async {
+    final ref = await _firestore.collection(segnalazioneCollection)
+      .doc(id)
+      .withConverter(
+        fromFirestore: Segnalazione.fromFirestore, 
+        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+      )
+      .get();
+
+    return ref.data();
+  }
+
+  @override
+  Future<Segnalazione> update(Segnalazione data) async {
+    if (data.id == null) {
+      throw Exception("Expected non-null id!");
+    }
+
+    await _firestore.collection(segnalazioneCollection)
+      .doc(data.id)
+      .withConverter<Segnalazione>(
+        fromFirestore: Segnalazione.fromFirestore, 
+        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+      )
+      .set(data);
+
+    final ref = await _firestore.collection(segnalazioneCollection)
+      .doc(data.id)
+      .withConverter(
+        fromFirestore: Segnalazione.fromFirestore, 
+        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+      ).get();
+
+    return ref.data()!;
+  }
+}
