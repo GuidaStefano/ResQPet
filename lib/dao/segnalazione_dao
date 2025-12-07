@@ -1,96 +1,60 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../entities/segnalazione.dart';
-import 'dao.dart'; // Assicurati che il file dao.dart (l'interfaccia) sia visibile
 
-class SegnalazioneDao implements Dao<Segnalazione, String> {
-  
-  static const segnalazioneCollection = "segnalazioni";
-  final FirebaseFirestore _firestore;
+class Segnalazione {
+  final String? id;
+  final List<String> foto;
+  final String descrizione;
+  final GeoPoint posizione;
+  final Timestamp dataCreazione;
+  final String stato;
+  final String indirizzo;
+  // Riferimento al soccorritore (opzionale, es. all'inizio è null)
+  final String? soccorritoreRef;
+  // Riferimento al cittadino
+  final String cittadinoRef;
 
-  SegnalazioneDao(this._firestore);
+  Segnalazione({
+    this.id,
+    required this.foto,
+    required this.descrizione,
+    required this.posizione,
+    required this.dataCreazione,
+    required this.stato,
+    required this.indirizzo,
+    this.soccorritoreRef,
+    required this.cittadinoRef,
+  });
 
-  @override
-  Future<Segnalazione> create(Segnalazione data) async {
-    final doc = await _firestore.collection(segnalazioneCollection)
-      .add(data.toFirestore());
-
-    final ref = await doc.withConverter(
-      fromFirestore: Segnalazione.fromFirestore, 
-      toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-    ).get();
-
-    return ref.data()!;
+  factory Segnalazione.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return Segnalazione(
+      id: snapshot.id,
+      foto: data?['foto'] is Iterable ? List<String>.from(data?['foto']) : [],
+      descrizione: data?['descrizione'] ?? '',
+      // Fallback a 0,0 se manca la posizione, per evitare crash
+      posizione: data?['posizione'] ?? const GeoPoint(0, 0),
+      dataCreazione: data?['dataCreazione'] ?? Timestamp.now(),
+      stato: data?['stato'] ?? 'in attesa',
+      indirizzo: data?['indirizzo'] ?? '',
+      soccorritoreRef: data?['soccorritore_ref'],
+      // Importante: recuperiamo il riferimento al cittadino
+      cittadinoRef: data?['cittadino_ref'] ?? '',
+    );
   }
 
-  @override
-  Future<void> deleteById(String id) async {
-    await _firestore.collection(segnalazioneCollection)
-      .doc(id)
-      .delete();
-  }
-
-  @override
-  Future<List<Segnalazione>> findAll() async {
-    final querySnapshot = await _firestore.collection(segnalazioneCollection)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore,
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      ).get();
-
-    return querySnapshot.docs
-      .map((doc) => doc.data())
-      .toList();
-  }
-
-  @override
-  Stream<List<Segnalazione>> findAllStream() {
-    return _firestore.collection(segnalazioneCollection)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore,
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      )
-      .snapshots()
-      .map((snapshot) {
-        return snapshot.docs
-          .map((doc) => doc.data())
-          .toList();
-      });
-  }
-
-  @override
-  Future<Segnalazione?> findById(String id) async {
-    final ref = await _firestore.collection(segnalazioneCollection)
-      .doc(id)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore, 
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      )
-      .get();
-
-    return ref.data();
-  }
-
-  @override
-  Future<Segnalazione> update(Segnalazione data) async {
-    if (data.id == null) {
-      throw Exception("Expected non-null id!");
-    }
-
-    await _firestore.collection(segnalazioneCollection)
-      .doc(data.id)
-      .withConverter<Segnalazione>(
-        fromFirestore: Segnalazione.fromFirestore, 
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      )
-      .set(data);
-
-    final ref = await _firestore.collection(segnalazioneCollection)
-      .doc(data.id)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore, 
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      ).get();
-
-    return ref.data()!;
+  Map<String, dynamic> toFirestore() {
+    return {
+      'foto': foto,
+      'descrizione': descrizione,
+      'posizione': posizione,
+      'dataCreazione': dataCreazione,
+      'stato': stato,
+      'indirizzo': indirizzo,
+      'soccorritore_ref': soccorritoreRef,
+      'cittadino_ref': cittadinoRef,
+    };
   }
 }
