@@ -10,18 +10,23 @@ class UtenteDao implements Dao<Utente, String> {
 
   @override
   Future<Utente> create(Utente data) async {
+
+    if(data.id.isEmpty) {
+      throw ArgumentError("ID dell'utente non può essere vuoto. Deve corrispondere all'UID di Firebase Auth.");
+    }
+
     final doc = _firestore
-        .collection(userCollection)
-        .doc(data.id.isNotEmpty ? data.id : null);
+      .collection(userCollection)
+      .doc(data.id);
 
     await doc.set(data.toFirestore());
 
     final ref = await doc
-        .withConverter(
-          fromFirestore: Utente.fromFirestore,
-          toFirestore: (utente, _) => utente.toFirestore(),
-        )
-        .get();
+      .withConverter(
+        fromFirestore: Utente.fromFirestore,
+        toFirestore: (utente, _) => utente.toFirestore(),
+      )
+      .get();
 
     return ref.data()!;
   }
@@ -29,36 +34,41 @@ class UtenteDao implements Dao<Utente, String> {
   @override
   Future<Utente?> findById(String id) async {
     final ref = await _firestore
-        .collection(userCollection)
-        .doc(id)
-        .withConverter(
-          fromFirestore: Utente.fromFirestore,
-          toFirestore: (utente, _) => utente.toFirestore(),
-        )
-        .get();
+      .collection(userCollection)
+      .doc(id)
+      .withConverter(
+        fromFirestore: Utente.fromFirestore,
+        toFirestore: (utente, _) => utente.toFirestore(),
+      )
+      .get();
 
     return ref.data();
   }
 
   @override
   Future<Utente> update(Utente data) async {
+
+    if(data.id.isEmpty) {
+      throw ArgumentError("Impossibile aggiornare un utente senza ID.");
+    }
+
     await _firestore
-        .collection(userCollection)
-        .doc(data.id)
-        .withConverter<Utente>(
-          fromFirestore: Utente.fromFirestore,
-          toFirestore: (utente, _) => utente.toFirestore(),
-        )
-        .set(data);
+      .collection(userCollection)
+      .doc(data.id)
+      .withConverter<Utente>(
+        fromFirestore: Utente.fromFirestore,
+        toFirestore: (utente, _) => utente.toFirestore(),
+      )
+      .set(data);
 
     final ref = await _firestore
-        .collection(userCollection)
-        .doc(data.id)
-        .withConverter(
-          fromFirestore: Utente.fromFirestore,
-          toFirestore: (utente, _) => utente.toFirestore(),
-        )
-        .get();
+      .collection(userCollection)
+      .doc(data.id)
+      .withConverter(
+        fromFirestore: Utente.fromFirestore,
+        toFirestore: (utente, _) => utente.toFirestore(),
+      )
+      .get();
 
     return ref.data()!;
   }
@@ -76,12 +86,12 @@ class UtenteDao implements Dao<Utente, String> {
   @override
   Future<List<Utente>> findAll() async {
     final querySnapshot = await _firestore
-        .collection(userCollection)
-        .withConverter(
-          fromFirestore: Utente.fromFirestore,
-          toFirestore: (utente, _) => utente.toFirestore(),
-        )
-        .get();
+      .collection(userCollection)
+      .withConverter(
+        fromFirestore: Utente.fromFirestore,
+        toFirestore: (utente, _) => utente.toFirestore(),
+      )
+      .get();
 
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
@@ -89,14 +99,14 @@ class UtenteDao implements Dao<Utente, String> {
   @override
   Stream<List<Utente>> findAllStream() {
     return _firestore
-        .collection(userCollection)
-        .withConverter(
-          fromFirestore: Utente.fromFirestore,
-          toFirestore: (utente, _) => utente.toFirestore(),
-        )
-        .snapshots()
-        .map((snapshot) {
-          return snapshot.docs.map((doc) => doc.data()).toList();
-        });
+      .collection(userCollection)
+      .withConverter(
+        fromFirestore: Utente.fromFirestore,
+        toFirestore: (utente, _) => utente.toFirestore(),
+      )
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) => doc.data()).toList();
+      });
   }
 }
