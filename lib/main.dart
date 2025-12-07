@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'firebase_options.dart';
+
+import 'package:resqpet/core/config/stripe.dart' as stripe_config;
+
 
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );
+
+  Stripe.publishableKey = stripe_config.publishableKEy;
 
   runApp(const MyApp());
 }
