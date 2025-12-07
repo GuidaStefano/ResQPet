@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-// Assicurati che il percorso dell'import sia corretto nel tuo progetto
-import 'package:resqpet/entities/segnalazione.dart'; 
+import 'package:resqpet/models/segnalazione.dart'; 
 import 'dao.dart'; 
 
 class SegnalazioneDao implements Dao<Segnalazione, String> {
@@ -8,37 +7,36 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
   static const segnalazioneCollection = "segnalazioni";
   final FirebaseFirestore _firestore;
 
+  CollectionReference<Segnalazione> get _collection =>
+    _firestore.collection(segnalazioneCollection)
+      .withConverter(
+        fromFirestore: Segnalazione.fromFirestore,
+        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+      );
+
   SegnalazioneDao(this._firestore);
+
 
   @override
   Future<Segnalazione> create(Segnalazione data) async {
-    // Aggiunge il documento (Firestore genera l'ID)
-    final doc = await _firestore.collection(segnalazioneCollection)
-      .add(data.toFirestore());
-
-    // Recupera l'oggetto appena creato per restituirlo completo di ID
-    final ref = await doc.withConverter(
-      fromFirestore: Segnalazione.fromFirestore, 
-      toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-    ).get();
-
-    return ref.data()!;
+    final doc = await _collection.add(data);
+    return data.copyWith(id: doc.id);
   }
 
   @override
-  Future<void> deleteById(String id) async {
-    await _firestore.collection(segnalazioneCollection)
-      .doc(id)
-      .delete();
+  Future<bool> deleteById(String id) async {
+
+    try{
+      await _collection.doc(id).delete();
+      return true;
+    } catch(_) {
+      return false;
+    }
   }
 
   @override
   Future<List<Segnalazione>> findAll() async {
-    final querySnapshot = await _firestore.collection(segnalazioneCollection)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore,
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      ).get();
+    final querySnapshot = await _collection.get();
 
     return querySnapshot.docs
       .map((doc) => doc.data())
@@ -47,11 +45,7 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
 
   @override
   Stream<List<Segnalazione>> findAllStream() {
-    return _firestore.collection(segnalazioneCollection)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore,
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      )
+    return _collection
       .snapshots()
       .map((snapshot) {
         return snapshot.docs
@@ -62,40 +56,20 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
 
   @override
   Future<Segnalazione?> findById(String id) async {
-    final ref = await _firestore.collection(segnalazioneCollection)
-      .doc(id)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore, 
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      )
-      .get();
-
+    final ref = await _collection.doc(id).get();
     return ref.data();
   }
 
   @override
   Future<Segnalazione> update(Segnalazione data) async {
-    if (data.id == null) {
+    if (data.id.isEmpty) {
       throw Exception("Expected non-null id for update!");
     }
 
-    // Utilizzo .set come nel tuo esempio User/TodoDao per coerenza
-    await _firestore.collection(segnalazioneCollection)
-      .doc(data.id)
-      .withConverter<Segnalazione>(
-        fromFirestore: Segnalazione.fromFirestore, 
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      )
+    await _collection.doc(data.id)
       .set(data);
 
-    final ref = await _firestore.collection(segnalazioneCollection)
-      .doc(data.id)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore, 
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      ).get();
-
-    return ref.data()!;
+    return data;
   }
 
   // --- Metodi Aggiuntivi per coprire i requisiti SDD ---
@@ -103,12 +77,9 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
   /// Permette di recuperare le segnalazioni assegnate a un Soccorritore specifico.
   /// Necessario per il requisito "Prende in carico segnalazione" e "Visualizza segnalazioni" [SDD 4.2]
   Future<List<Segnalazione>> findBySoccorritore(String soccorritoreId) async {
-    final querySnapshot = await _firestore.collection(segnalazioneCollection)
+    final querySnapshot = await _collection
       .where('soccorritore_ref', isEqualTo: soccorritoreId)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore,
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      ).get();
+      .get();
 
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
@@ -116,13 +87,32 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
   /// Permette di recuperare lo storico delle segnalazioni di un Cittadino.
   /// Necessario per il requisito "Lista segnalazioni" lato cittadino [SDD 4.2]
   Future<List<Segnalazione>> findByCittadino(String cittadinoId) async {
-    final querySnapshot = await _firestore.collection(segnalazioneCollection)
+    final querySnapshot = await _collection
       .where('cittadino_ref', isEqualTo: cittadinoId)
-      .withConverter(
-        fromFirestore: Segnalazione.fromFirestore,
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
-      ).get();
+      .get();
 
     return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  /// Permette di filtrare le segnalazione per stato
+  Future<List<Segnalazione>> findByStato(StatoSegnalazione stato) async {
+    final querySnapshot = await _collection
+      .where('stato', isEqualTo: stato.value)
+      .get();
+
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  /// Permette di filtrare le segnalazione per stato.
+  /// Restituisce uno stream per aggirnamenti in tempo reale
+  Stream<List<Segnalazione>> findByStatoStream(StatoSegnalazione stato) {
+    return _collection
+      .where('stato', isEqualTo: stato.value)
+      .snapshots()
+      .map((snapshot) => 
+        snapshot.docs.map(
+          (doc) => doc.data()
+        ).toList()
+      );
   }
 }
