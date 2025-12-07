@@ -15,11 +15,15 @@ import '../models/report.dart';
 /// L'id del report è il document.id di Firestore.
 class ReportDao implements Dao<Report, String> {
   final FirebaseFirestore _db;
-  final CollectionReference<Map<String, dynamic>> _collection;
 
-  ReportDao(FirebaseFirestore db)
-      : _db = db,
-        _collection = db.collection('reports');
+  CollectionReference<Report> get _collection 
+    => _db.collection('reports')
+      .withConverter(
+        fromFirestore: Report.fromFirestore,
+        toFirestore: (report, _)  => report.toFirestore()
+      );
+
+  ReportDao(this._db);
 
   /// Crea un nuovo documento "report" in Firestore.
   ///
@@ -27,7 +31,7 @@ class ReportDao implements Dao<Report, String> {
   /// l'id generato da Firestore.
   @override
   Future<Report> create(Report data) async {
-    final docRef = await _collection.add(data.toMap());
+    final docRef = await _collection.add(data);
     // restituisco lo stesso report con id aggiornato
     return data.copyWith(id: docRef.id);
   }
@@ -36,12 +40,7 @@ class ReportDao implements Dao<Report, String> {
   @override
   Future<Report?> findById(String id) async {
     final doc = await _collection.doc(id).get();
-    if (!doc.exists) {
-      return null;
-    }
-    final data = doc.data();
-    if (data == null) return null;
-    return Report.fromMap(data, id: doc.id);
+    return doc.data();
   }
 
   /// Aggiorna il documento esistente per il report passato.
@@ -50,10 +49,13 @@ class ReportDao implements Dao<Report, String> {
   @override
   Future<Report> update(Report data) async {
     if (data.id.isEmpty) {
-      throw ArgumentError('Report.id non può essere vuoto per l\'update');
+      throw ArgumentError("Report.id non può essere vuoto per l'update");
     }
 
-    await _collection.doc(data.id).update(data.toMap());
+    await _collection
+      .doc(data.id)
+      .update(data.toFirestore());
+
     return data;
   }
 
@@ -65,7 +67,7 @@ class ReportDao implements Dao<Report, String> {
     try {
       await _collection.doc(id).delete();
       return true;
-    } on FirebaseException {
+    } catch(_) {
       // Puoi loggare l'errore o propagare in modo diverso se preferisci
       return false;
     }
@@ -76,7 +78,7 @@ class ReportDao implements Dao<Report, String> {
   Future<List<Report>> findAll() async {
     final snapshot = await _collection.get();
     return snapshot.docs
-        .map((doc) => Report.fromMap(doc.data(), id: doc.id))
+        .map((doc) => doc.data())
         .toList();
   }
 
@@ -86,31 +88,34 @@ class ReportDao implements Dao<Report, String> {
   @override
   Stream<List<Report>> findAllStream() {
     return _collection.snapshots().map(
-          (querySnapshot) => querySnapshot.docs
-              .map((doc) => Report.fromMap(doc.data(), id: doc.id))
-              .toList(),
-        );
+      (querySnapshot) => querySnapshot.docs
+        .map((doc) => doc.data())
+        .toList(),
+    );
   }
 
   // --- Metodi extra opzionali ---
 
   /// Restituisce tutti i report con uno specifico stato (es. "aperto", "risolto").
-  Future<List<Report>> findByStato(String stato) async {
-    final snapshot =
-        await _collection.where('stato', isEqualTo: stato).get();
+  Future<List<Report>> findByStato(StatoReport stato) async {
+    final snapshot = await _collection
+      .where('stato', isEqualTo: stato.stato)
+      .get();
 
     return snapshot.docs
-        .map((doc) => Report.fromMap(doc.data(), id: doc.id))
-        .toList();
+      .map((doc) => doc.data())
+      .toList();
   }
 
   /// Stream dei soli report con uno specifico stato (es. solo "aperto").
-  Stream<List<Report>> findByStatoStream(String stato) {
+  Stream<List<Report>> findByStatoStream(StatoReport stato) {
     return _collection
-        .where('stato', isEqualTo: stato)
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.docs
-            .map((doc) => Report.fromMap(doc.data(), id: doc.id))
-            .toList());
+      .where('stato', isEqualTo: stato.stato)
+      .snapshots()
+      .map(
+        (querySnapshot) => querySnapshot.docs
+          .map((doc) => doc.data())
+          .toList()
+      );
   }
 }
