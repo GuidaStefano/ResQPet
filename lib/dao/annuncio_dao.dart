@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
-import 'package:resqpet/models/annuncio/annuncio_factory.dart';
 import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/models/annuncio/stato_annuncio.dart';
 import 'package:resqpet/dao/dao.dart';
@@ -9,33 +8,32 @@ import 'package:resqpet/dao/dao.dart';
 ///
 /// Implements the Dao interface and provides polymorphic handling
 /// of AnnuncioVendita and AnnuncioAdozione types.
-///
-/// Note: Due to polymorphic nature, this DAO does not use Firestore's
-/// withConverter. Instead, it handles conversion manually to support
-/// returning the correct subclass type.
 class AnnuncioDao implements Dao<Annuncio, String> {
   final FirebaseFirestore _firestore;
   final String _collectionPath = 'annunci';
 
   AnnuncioDao(this._firestore);
 
-  /// Returns a reference to the annunci collection.
-  CollectionReference<Map<String, dynamic>> get _collection =>
-      _firestore.collection(_collectionPath);
+  /// Collection con withConverter per serializzazione/deserializzazione automatica.
+  CollectionReference<Annuncio> get _collection =>
+      _firestore.collection(_collectionPath).withConverter<Annuncio>(
+            fromFirestore: Annuncio.fromFirestore,
+            toFirestore: (annuncio, _) => annuncio.toFirestore(),
+          );
+
+  // ==================== Dao Interface Methods ====================
 
   @override
   Future<Annuncio> create(Annuncio data) async {
     final docRef = _collection.doc();
-    await docRef.set(data.toFirestore());
+    await docRef.set(data);
     return data.copyWith(id: docRef.id);
   }
 
   @override
   Future<Annuncio?> findById(String id) async {
     final doc = await _collection.doc(id).get();
-    final data = doc.data();
-    if (data == null) return null;
-    return AnnuncioFactory.fromMap(data, doc.id);
+    return doc.data();
   }
 
   @override
@@ -43,7 +41,7 @@ class AnnuncioDao implements Dao<Annuncio, String> {
     if (data.id.isEmpty) {
       throw ArgumentError('Annuncio.id is required for update');
     }
-    await _collection.doc(data.id).set(data.toFirestore());
+    await _collection.doc(data.id).set(data);
     return data;
   }
 
@@ -60,28 +58,24 @@ class AnnuncioDao implements Dao<Annuncio, String> {
   @override
   Future<List<Annuncio>> findAll() async {
     final snap = await _collection.get();
-    return snap.docs
-        .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-        .toList();
+    return snap.docs.map((d) => d.data()).toList();
   }
 
   @override
   Stream<List<Annuncio>> findAllStream() {
-    return _collection.snapshots().map(
-      (query) => query.docs
-          .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-          .toList(),
-    );
+    return _collection
+        .snapshots()
+        .map((query) => query.docs.map((d) => d.data()).toList());
   }
+
+  // ==================== Additional Query Methods ====================
 
   /// Finds all announcements of a specific type.
   Future<List<Annuncio>> findByTipo(TipoAnnuncio tipo) async {
     final snap = await _collection
         .where('tipo', isEqualTo: tipo.toFirestore())
         .get();
-    return snap.docs
-        .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-        .toList();
+    return snap.docs.map((d) => d.data()).toList();
   }
 
   /// Returns a stream of announcements filtered by type.
@@ -89,11 +83,7 @@ class AnnuncioDao implements Dao<Annuncio, String> {
     return _collection
         .where('tipo', isEqualTo: tipo.toFirestore())
         .snapshots()
-        .map(
-          (query) => query.docs
-              .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-              .toList(),
-        );
+        .map((query) => query.docs.map((d) => d.data()).toList());
   }
 
   /// Finds all announcements created by a specific user.
@@ -101,9 +91,7 @@ class AnnuncioDao implements Dao<Annuncio, String> {
     final snap = await _collection
         .where('creatore_ref', isEqualTo: creatoreRef)
         .get();
-    return snap.docs
-        .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-        .toList();
+    return snap.docs.map((d) => d.data()).toList();
   }
 
   /// Returns a stream of announcements for a specific creator.
@@ -111,11 +99,7 @@ class AnnuncioDao implements Dao<Annuncio, String> {
     return _collection
         .where('creatore_ref', isEqualTo: creatoreRef)
         .snapshots()
-        .map(
-          (query) => query.docs
-              .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-              .toList(),
-        );
+        .map((query) => query.docs.map((d) => d.data()).toList());
   }
 
   /// Finds all announcements with a specific status.
@@ -123,9 +107,7 @@ class AnnuncioDao implements Dao<Annuncio, String> {
     final snap = await _collection
         .where('statoAnnuncio', isEqualTo: stato.toFirestore())
         .get();
-    return snap.docs
-        .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-        .toList();
+    return snap.docs.map((d) => d.data()).toList();
   }
 
   /// Returns a stream of announcements filtered by status.
@@ -133,11 +115,32 @@ class AnnuncioDao implements Dao<Annuncio, String> {
     return _collection
         .where('statoAnnuncio', isEqualTo: stato.toFirestore())
         .snapshots()
-        .map(
-          (query) => query.docs
-              .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-              .toList(),
-        );
+        .map((query) => query.docs.map((d) => d.data()).toList());
+  }
+
+  /// Finds announcements by status and type.
+  /// Useful for calculating seller revenue (closed sale announcements).
+  Future<List<Annuncio>> findByStatoAndTipo(
+    StatoAnnuncio stato,
+    TipoAnnuncio tipo,
+  ) async {
+    final snap = await _collection
+        .where('statoAnnuncio', isEqualTo: stato.toFirestore())
+        .where('tipo', isEqualTo: tipo.toFirestore())
+        .get();
+    return snap.docs.map((d) => d.data()).toList();
+  }
+
+  /// Stream version of findByStatoAndTipo.
+  Stream<List<Annuncio>> findByStatoAndTipoStream(
+    StatoAnnuncio stato,
+    TipoAnnuncio tipo,
+  ) {
+    return _collection
+        .where('statoAnnuncio', isEqualTo: stato.toFirestore())
+        .where('tipo', isEqualTo: tipo.toFirestore())
+        .snapshots()
+        .map((query) => query.docs.map((d) => d.data()).toList());
   }
 
   /// Finds active announcements of a specific type.
@@ -147,23 +150,19 @@ class AnnuncioDao implements Dao<Annuncio, String> {
         .where('tipo', isEqualTo: tipo.toFirestore())
         .where('statoAnnuncio', isEqualTo: StatoAnnuncio.attivo.toFirestore())
         .get();
-    return snap.docs
-        .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-        .toList();
+    return snap.docs.map((d) => d.data()).toList();
   }
 
   /// Finds announcements by species (e.g., 'cane', 'gatto').
   Future<List<Annuncio>> findBySpecie(String specie) async {
     final snap = await _collection.where('specie', isEqualTo: specie).get();
-    return snap.docs
-        .map((d) => AnnuncioFactory.fromMap(d.data(), d.id))
-        .toList();
+    return snap.docs.map((d) => d.data()).toList();
   }
 
   /// Updates only the status of an announcement.
   /// More efficient than updating the entire document.
   Future<void> updateStato(String id, StatoAnnuncio nuovoStato) async {
-    await _collection.doc(id).update({
+    await _firestore.collection(_collectionPath).doc(id).update({
       'statoAnnuncio': nuovoStato.toFirestore(),
     });
   }
