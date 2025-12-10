@@ -32,5 +32,8 @@ linter:
     - unnecessary_lambdas: true
     - unnecessary_getters_setters: true
 
+analyzer:
+  plugins:
+    - custom_lint
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
