@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/adapters/firestore_adapter.dart';
 
 class Abbonamento {
   final String id;
@@ -17,21 +18,31 @@ class Abbonamento {
     required this.durataInMesi,
   });
 
-  Map<String, dynamic> toFirestore() {
-    return {
-      'descrizione': descrizione,
-      'prezzo': prezzo,
-      'maxAnnunciVendita': maxAnnunciVendita,
-      'annunciPriority': annunciPriority,
-      'durataInMesi': durataInMesi,
-    };
+  Abbonamento copyWith({
+    String? id,
+    String? descrizione,
+    double? prezzo,
+    int? maxAnnunciVendita,
+    int? annunciPriority,
+    int? durataInMesi,
+  }) {
+    return Abbonamento(
+      id: id ?? this.id,
+      descrizione: descrizione ?? this.descrizione,
+      prezzo: prezzo ?? this.prezzo,
+      maxAnnunciVendita: maxAnnunciVendita ?? this.maxAnnunciVendita,
+      annunciPriority: annunciPriority ?? this.annunciPriority,
+      durataInMesi: durataInMesi ?? this.durataInMesi,
+    );
   }
+}
 
-  factory Abbonamento.fromFirestore(
+class AbbonamentoFirestoreAdapter implements FirestoreAdapter<Abbonamento> {
+  @override
+  Abbonamento fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     [SnapshotOptions? options]
   ) {
-
     final data = snapshot.data();
 
     if(data == null) {
@@ -47,4 +58,16 @@ class Abbonamento {
       durataInMesi: data['durataInMesi'] as int? ?? 0 
     );
   }
+
+  @override
+  Map<String, dynamic> toFirestore(Abbonamento abbonamento) {
+    return {
+      'descrizione': abbonamento.descrizione,
+      'prezzo': abbonamento.prezzo,
+      'maxAnnunciVendita': abbonamento.maxAnnunciVendita,
+      'annunciPriority': abbonamento.annunciPriority,
+      'durataInMesi': abbonamento.durataInMesi,
+    };
+  }
+  
 }
