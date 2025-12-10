@@ -25,7 +25,7 @@ enum StatoReport {
 ///   descrizione   -> descrizione estesa
 ///   cittadinoRef  -> riferimento all'utente che ha creato il report (utenti/_id)
 ///   annuncioRef   -> riferimento all'annuncio segnalato (annunci/_id)
-///   stato         -> stato del report (es. "aperto", "risolto", "ignorato")
+///   stato         -> stato del report (es. "aperto", "risolto")
 class Report implements Copyable<Report> {
   final String id;
   final String motivazione;
@@ -93,6 +93,7 @@ class ReportFirestoreAdapter implements FirestoreAdapter<Report> {
     if(data == null) {
       throw ArgumentError.notNull("snapshot.data()");
     }
+    
     return Report(
       id: snapshot.id,
       motivazione: data['motivazione'] as String? ?? '',

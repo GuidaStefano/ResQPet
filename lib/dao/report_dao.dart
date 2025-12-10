@@ -10,7 +10,7 @@ import '../models/report.dart';
 ///   descrizione   : string
 ///   cittadino_ref : string (id utente)
 ///   annuncio_ref  : string (id annuncio)
-///   stato         : string (es. "aperto", "risolto", "ignorato")
+///   stato         : string (es. "aperto", "risolto")
 ///
 /// L'id del report è il document.id di Firestore.
 class ReportDao implements Dao<Report, String> {
