@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/adapters/firestore_adapter.dart';
 import 'package:resqpet/core/utils/copyable.dart';
 
 enum StatoSegnalazione {
@@ -43,44 +44,6 @@ class Segnalazione implements Copyable<Segnalazione>{
     required this.cittadinoRef,
   });
 
-  factory Segnalazione.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options,
-  ) {
-    final data = snapshot.data();
-
-    if(data == null) {
-      throw ArgumentError.notNull("snapshot.data");
-    }
-
-    return Segnalazione(
-      id: snapshot.id,
-      foto: List<String>.from(data['foto'] ?? []),
-      descrizione: data['descrizione'] ?? '',
-      posizione: data['posizione'] ?? const GeoPoint(0, 0),
-      dataCreazione: data['dataCreazione'] ?? Timestamp.now(),
-      stato: StatoSegnalazione.fromString(
-        data['stato'] ?? StatoSegnalazione.inAttesa.value
-      ),
-      indirizzo: data['indirizzo'] ?? '',
-      soccorritoreRef: data['soccorritore_ref'],
-      cittadinoRef: data['cittadino_ref'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      'foto': foto,
-      'descrizione': descrizione,
-      'posizione': posizione,
-      'dataCreazione': dataCreazione,
-      'stato': stato.toFirestore(),
-      'indirizzo': indirizzo,
-      'soccorritore_ref': soccorritoreRef,
-      'cittadino_ref': cittadinoRef,
-    };
-  }
-
   @override
   Segnalazione copyWith({
     String? id,
@@ -107,5 +70,47 @@ class Segnalazione implements Copyable<Segnalazione>{
         : (soccorritoreRef ?? this.soccorritoreRef),
       cittadinoRef: cittadinoRef ?? this.cittadinoRef,
     );
+  }
+}
+
+class SegnalazioneFirestoreAdapter implements FirestoreAdapter<Segnalazione> {
+  @override
+  Segnalazione fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    [SnapshotOptions? options]
+  ) {
+    final data = snapshot.data();
+
+    if(data == null) {
+      throw ArgumentError.notNull("snapshot.data()");
+    }
+
+    return Segnalazione(
+      id: snapshot.id,
+      foto: List<String>.from(data['foto'] ?? []),
+      descrizione: data['descrizione'] ?? '',
+      posizione: data['posizione'] ?? const GeoPoint(0, 0),
+      dataCreazione: data['dataCreazione'] ?? Timestamp.now(),
+      stato: StatoSegnalazione.fromString(
+        data['stato'] ?? StatoSegnalazione.inAttesa.value
+      ),
+      indirizzo: data['indirizzo'] ?? '',
+      soccorritoreRef: data['soccorritore_ref'],
+      cittadinoRef: data['cittadino_ref'] ?? '',
+    );
+  }
+
+  @override
+  Map<String, dynamic> toFirestore(Segnalazione segnalazione) {
+    return {
+      'foto': segnalazione.foto,
+      'descrizione': segnalazione.descrizione,
+      'posizione': segnalazione.posizione,
+      'dataCreazione': segnalazione.dataCreazione,
+      'stato': segnalazione.stato.toFirestore(),
+      'indirizzo': segnalazione.indirizzo,
+      'soccorritore_ref': segnalazione.soccorritoreRef,
+      'cittadino_ref': segnalazione.cittadinoRef,
+    };
   }
 }
