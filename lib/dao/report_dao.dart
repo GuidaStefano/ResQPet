@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/models/report.dart';
 
 import 'dao.dart';
-import '../models/report.dart';
 
 /// Implementazione concreta del DAO per la collezione "reports".
 ///
@@ -50,7 +50,7 @@ class ReportDao implements Dao<Report, String> {
   @override
   Future<Report> update(Report data) async {
     if (data.id.isEmpty) {
-      throw ArgumentError("Report.id non può essere vuoto per l'update");
+      throw ArgumentError('Report.id non può essere vuoto per l\'update');
     }
 
     await _collection

@@ -3,7 +3,7 @@ import 'dao.dart';
 import '../models/utente.dart';
 
 class UtenteDao implements Dao<Utente, String> {
-  static const userCollection = "utenti";
+  static const userCollection = 'utenti';
   final FirebaseFirestore _firestore;
 
   final UtenteFirestoreAdapter _adapter = UtenteFirestoreAdapter();
@@ -40,7 +40,7 @@ class UtenteDao implements Dao<Utente, String> {
   Future<Utente> update(Utente data) async {
 
     if(data.id.isEmpty) {
-      throw ArgumentError("Impossibile aggiornare un utente senza ID.");
+      throw ArgumentError('Impossibile aggiornare un utente senza ID.');
     }
 
     await _collection.doc(data.id)

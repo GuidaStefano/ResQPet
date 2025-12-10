@@ -4,7 +4,7 @@ import 'dao.dart';
 
 class SegnalazioneDao implements Dao<Segnalazione, String> {
   
-  static const segnalazioneCollection = "segnalazioni";
+  static const segnalazioneCollection = 'segnalazioni';
   final FirebaseFirestore _firestore;
 
   final SegnalazioneFirestoreAdapter _adapter = SegnalazioneFirestoreAdapter();
@@ -65,7 +65,7 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
   @override
   Future<Segnalazione> update(Segnalazione data) async {
     if (data.id.isEmpty) {
-      throw Exception("Expected non-null id for update!");
+      throw Exception('Expected non-null id for update!');
     }
 
     await _collection.doc(data.id)

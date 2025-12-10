@@ -48,7 +48,7 @@ class AbbonamentoFirestoreAdapter implements FirestoreAdapter<Abbonamento> {
     final data = snapshot.data();
 
     if(data == null) {
-      throw ArgumentError.notNull("snapshot.data()");
+      throw ArgumentError.notNull('snapshot.data()');
     }
 
     return Abbonamento(

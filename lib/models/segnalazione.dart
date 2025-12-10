@@ -82,7 +82,7 @@ class SegnalazioneFirestoreAdapter implements FirestoreAdapter<Segnalazione> {
     final data = snapshot.data();
 
     if(data == null) {
-      throw ArgumentError.notNull("snapshot.data()");
+      throw ArgumentError.notNull('snapshot.data()');
     }
 
     return Segnalazione(
