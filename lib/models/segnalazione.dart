@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
 enum StatoSegnalazione {
   inAttesa('in attesa'),
@@ -17,7 +18,7 @@ enum StatoSegnalazione {
   String toFirestore() => value;
 }
 
-class Segnalazione {
+class Segnalazione implements Copyable<Segnalazione>{
   final String id;
   final List<String> foto;
   final String descrizione;
@@ -80,6 +81,7 @@ class Segnalazione {
     };
   }
 
+  @override
   Segnalazione copyWith({
     String? id,
     List<String>? foto,

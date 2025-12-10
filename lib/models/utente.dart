@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
 enum TipoUtente {
 
@@ -21,7 +22,7 @@ enum TipoUtente {
   String toFirestore() => value;
 }
 
-class Utente {
+class Utente implements Copyable<Utente> {
   final String id;
   final String nominativo;
   final String email;
@@ -68,6 +69,7 @@ class Utente {
     };
   }
 
+  @override
   Utente copyWith({
     String? id,
     String? nominativo,
@@ -230,7 +232,7 @@ class Venditore extends Utente {
     return map;
   }
 
-    @override
+  @override
   Utente copyWith({
     String? id, 
     String? nominativo,

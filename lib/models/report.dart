@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
 enum StatoReport {
   aperto("aperto"),
@@ -24,7 +25,7 @@ enum StatoReport {
 ///   cittadinoRef  -> riferimento all'utente che ha creato il report (utenti/_id)
 ///   annuncioRef   -> riferimento all'annuncio segnalato (annunci/_id)
 ///   stato         -> stato del report (es. "aperto", "risolto", "ignorato")
-class Report {
+class Report implements Copyable<Report> {
   final String id;
   final String motivazione;
   final String descrizione;
@@ -58,6 +59,7 @@ class Report {
     );
   }
 
+  @override
   Report copyWith({
     String? id,
     String? motivazione,

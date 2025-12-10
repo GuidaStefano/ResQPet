@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
 import 'tipo_annuncio.dart';
 import 'stato_annuncio.dart';
@@ -7,7 +8,7 @@ import 'annuncio_adozione.dart';
 
 /// Base class for all announcement types.
 /// Contains common fields shared between AnnuncioVendita and AnnuncioAdozione.
-abstract class Annuncio {
+abstract class Annuncio implements Copyable<Annuncio> {
   final String id;
   final String creatoreRef;
   final TipoAnnuncio tipo;
@@ -84,6 +85,7 @@ abstract class Annuncio {
   Map<String, dynamic> toFirestore();
 
   /// Abstract method - each subclass must implement copyWith.
+  @override
   Annuncio copyWith({
     String? id,
     String? creatoreRef,

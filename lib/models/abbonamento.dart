@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:resqpet/core/adapters/firestore_adapter.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
-class Abbonamento {
+class Abbonamento implements Copyable<Abbonamento> {
   final String id;
   final String descrizione;
   final double prezzo;
@@ -18,6 +19,7 @@ class Abbonamento {
     required this.durataInMesi,
   });
 
+  @override
   Abbonamento copyWith({
     String? id,
     String? descrizione,
