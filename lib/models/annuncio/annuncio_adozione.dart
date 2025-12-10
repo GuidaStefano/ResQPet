@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'annuncio.dart';
 import 'tipo_annuncio.dart';
 import 'stato_annuncio.dart';
@@ -30,8 +28,8 @@ class AnnuncioAdozione extends Annuncio {
   }) : super(tipo: TipoAnnuncio.adozione);
 
   @override
-  Map<String, dynamic> toFirestore() {
-    final base = toFirestoreBase();
+  Map<String, dynamic> toMap() {
+    final base = toMapBase();
     base['dettagli_adozione'] = {
       'storia': storia,
       'noteSanitarie': noteSanitarie,
@@ -66,17 +64,6 @@ class AnnuncioAdozione extends Annuncio {
           dettagli['contributoSpeseSanitarie'] as String? ?? '',
       carattere: dettagli['carattere'] as String? ?? '',
     );
-  }
-
-  /// Creates an AnnuncioAdozione directly from a Firestore DocumentSnapshot.
-  factory AnnuncioAdozione.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-  ) {
-    final data = snapshot.data();
-    if (data == null) {
-      throw StateError('Document snapshot has no data');
-    }
-    return AnnuncioAdozione.fromMap(data, snapshot.id);
   }
 
   @override

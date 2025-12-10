@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
+import 'package:resqpet/models/annuncio/annuncio_firestore_adapter.dart';
 import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/models/annuncio/stato_annuncio.dart';
 import 'package:resqpet/dao/dao.dart';
@@ -14,12 +15,15 @@ class AnnuncioDao implements Dao<Annuncio, String> {
 
   AnnuncioDao(this._firestore);
 
+  final AnnuncioFirestoreAdapter _adapter = AnnuncioFirestoreAdapter();
+
   /// Collection con withConverter per serializzazione/deserializzazione automatica.
   CollectionReference<Annuncio> get _collection =>
-      _firestore.collection(_collectionPath).withConverter<Annuncio>(
-            fromFirestore: Annuncio.fromFirestore,
-            toFirestore: (annuncio, _) => annuncio.toFirestore(),
-          );
+    _firestore.collection(_collectionPath)
+      .withConverter<Annuncio>(
+        fromFirestore: (snapshot, options) => _adapter.fromFirestore(snapshot, options),
+        toFirestore: (annuncio, _) => _adapter.toFirestore(annuncio),
+      );
 
   // ==================== Dao Interface Methods ====================
 
