@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/adapters/firestore_adapter.dart';
 import 'package:resqpet/core/utils/copyable.dart';
 
 enum StatoReport {
@@ -77,41 +78,41 @@ class Report implements Copyable<Report> {
       stato: stato ?? this.stato,
     );
   }
+}
 
-  /// Mappa dalle chiavi JSON/Firestore alla nostra entity.
-  /// NOTA: l'id del documento NON è salvato nel documento, ma arriva da Firestore (doc.id).
-  factory Report.fromFirestore(
+
+
+class ReportFirestoreAdapter implements FirestoreAdapter<Report> {
+  @override
+  Report fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options
-  ) {
-
+    [SnapshotOptions? options]
+  ){
     final data = snapshot.data();
 
     if(data == null) {
-      throw ArgumentError.notNull("snapshot.data");
+      throw ArgumentError.notNull("snapshot.data()");
     }
-
     return Report(
       id: snapshot.id,
       motivazione: data['motivazione'] as String? ?? '',
       descrizione: data['descrizione'] as String? ?? '',
-      cittadinoRef: data['cittadino_ref'] as String? ?? '',
-      annuncioRef: data['annuncio_ref'] as String? ?? '',
+      cittadinoRef: data['cittadinoRef'] as String? ?? '',
+      annuncioRef: data['annuncioRef'] as String? ?? '',
       stato: StatoReport.fromString(
         data['stato'] as String? ?? StatoReport.aperto.stato
-      ),
+      )
     );
   }
 
-  /// Conversione a JSON per Firestore.
-  /// L'id NON viene incluso: Firestore usa l'id del documento, non un campo "id".
-  Map<String, dynamic> toFirestore() {
+  @override
+  Map<String, dynamic> toFirestore(Report report) {
     return {
-      'motivazione': motivazione,
-      'descrizione': descrizione,
-      'cittadino_ref': cittadinoRef,
-      'annuncio_ref': annuncioRef,
-      'stato': stato.toFirestore(),
+      'motivazione': report.motivazione,
+      'descrizione': report.descrizione,
+      'cittadinoRef': report.cittadinoRef,
+      'annuncioRef': report.annuncioRef,
+      'stato': report.stato.toFirestore(),
     };
   }
 }
