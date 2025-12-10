@@ -1,5 +1,6 @@
 import 'package:resqpet/dao/annuncio_dao.dart';
 import 'package:resqpet/dao/report_dao.dart';
+import 'package:resqpet/dao/segnalazione_dao.dart';
 import 'package:resqpet/dao/utente_dao.dart';
 import 'package:resqpet/di/firebase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,4 +23,10 @@ AnnuncioDao annuncioDao(Ref ref) {
 ReportDao reportDao(Ref ref) {
   final firebaseFirestore = ref.read(firebaseFirestoreProvider);
   return ReportDao(firebaseFirestore);
+}
+
+@riverpod
+SegnalazioneDao segnalazioneDao(Ref ref) {
+  final firebaseFirestore = ref.read(firebaseFirestoreProvider);
+  return SegnalazioneDao(firebaseFirestore);
 }
