@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/adapters/firestore_adapter.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
 enum TipoUtente {
 
@@ -21,7 +23,7 @@ enum TipoUtente {
   String toFirestore() => value;
 }
 
-class Utente {
+class Utente implements Copyable<Utente> {
   final String id;
   final String nominativo;
   final String email;
@@ -38,36 +40,20 @@ class Utente {
     required this.numeroTelefono,
   });
 
-  factory Utente.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    [SnapshotOptions? options]
-  ) {
-    final data = snapshot.data();
+  factory Utente.fromMap(
+    Map<String, dynamic> data,
+    TipoUtente tipo,
+    String id
+  ) =>  Utente(
+    id: id,
+    nominativo: data['nominativo'] ?? '',
+    email: data['email'] ?? '',
+    dataCreazione: data['dataCreazione'] as Timestamp? ?? Timestamp.now(),
+    tipo: tipo,
+    numeroTelefono: data['numeroTelefono'] ?? '',
+  );
 
-    if(data == null) {
-      throw ArgumentError.notNull("snapshot.data");
-    }
-
-    if(data['tipo'] == null) {
-      throw ArgumentError.notNull("data['tipo']");
-    }
-
-    final tipo = TipoUtente.fromString(data['tipo']);
-
-    return switch(tipo) {
-      TipoUtente.ente => Ente.fromFirestore(snapshot, options),
-      TipoUtente.venditore => Venditore.fromFirestore(snapshot, options),
-      _ => Utente(
-        id: snapshot.id,
-        nominativo: data['nominativo'] ?? '',
-        email: data['email'] ?? '',
-        dataCreazione: data['dataCreazione'] as Timestamp? ?? Timestamp.now(),
-        tipo: tipo,
-        numeroTelefono: data['numeroTelefono'] ?? '',
-      )
-    };
-  }
-
+  @override
   Utente copyWith({
     String? id,
     String? nominativo,
@@ -84,7 +70,7 @@ class Utente {
     numeroTelefono: numeroTelefono ?? this.numeroTelefono
   );
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
       'nominativo': nominativo,
       'email': email,
@@ -110,15 +96,10 @@ class Ente extends Utente {
     required this.partitaIVA,
   }) : super(tipo: TipoUtente.ente);
 
-  factory Ente.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options,
+  factory Ente.fromMap(
+    Map<String, dynamic> data,
+    String id
   ) {
-    final data = snapshot.data();
-
-    if(data == null) {
-      throw ArgumentError.notNull("snapshot.data");
-    }
 
     final dettagliEnte = data['dettagli_ente'];
     if(dettagliEnte == null) {
@@ -126,7 +107,7 @@ class Ente extends Utente {
     }
 
     return Ente(
-      id: snapshot.id,
+      id: id,
       nominativo: data['nominativo'] ?? '',
       email: data['email'] ?? '',
       dataCreazione: data['dataCreazione'] as Timestamp? ?? Timestamp.now(),
@@ -137,8 +118,8 @@ class Ente extends Utente {
   }
 
   @override
-  Map<String, dynamic> toFirestore() {
-    final map = super.toFirestore();
+  Map<String, dynamic> toMap() {
+    final map = super.toMap();
     
     map['dettagli_ente'] = {
       'sedeLegale': sedeLegale,
@@ -187,15 +168,10 @@ class Venditore extends Utente {
     required this.abbonamentoRef,
   }) : super(tipo: TipoUtente.venditore);
 
-  factory Venditore.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    [SnapshotOptions? options]
+  factory Venditore.fromMap(
+    Map<String, dynamic> data,
+    String id
   ) {
-    final data = snapshot.data();
-
-    if(data == null) {
-      throw ArgumentError.notNull("snapshot.data");
-    }
 
     final dettagliVenditore = data['dettagli_venditore'];
     if(dettagliVenditore == null) {
@@ -203,7 +179,7 @@ class Venditore extends Utente {
     }
 
     return Venditore(
-      id: snapshot.id,
+      id: id,
       nominativo: data['nominativo'] ?? '',
       email: data['email'] ?? '',
       dataCreazione: data['dataCreazione'] as Timestamp? ?? Timestamp.now(),
@@ -217,8 +193,8 @@ class Venditore extends Utente {
   }
 
   @override
-  Map<String, dynamic> toFirestore() {
-    final map = super.toFirestore();
+  Map<String, dynamic> toMap() {
+    final map = super.toMap();
     
     map['dettagli_venditore'] = {
       'partitaIVA': partitaIVA,
@@ -230,7 +206,7 @@ class Venditore extends Utente {
     return map;
   }
 
-    @override
+  @override
   Utente copyWith({
     String? id, 
     String? nominativo,
@@ -253,4 +229,37 @@ class Venditore extends Utente {
     dataSottoscrizioneAbbonamento: dataSottoscrizioneAbbonamento ?? this.dataSottoscrizioneAbbonamento,
     abbonamentoRef: abbonamentoRef ?? this.abbonamentoRef
   );
+}
+
+class UtenteFirestoreAdapter implements FirestoreAdapter<Utente> {
+  @override
+  Utente fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    [SnapshotOptions? options]
+  ) {
+
+    final data = snapshot.data();
+
+    if(data == null) {
+      throw ArgumentError.notNull("snapshot.data");
+    }
+
+    if(data['tipo'] == null) {
+      throw ArgumentError.notNull("data['tipo']");
+    }
+
+    final tipo = TipoUtente.fromString(data['tipo']);
+    final id = snapshot.id;
+
+    return switch(tipo) {
+      TipoUtente.ente => Ente.fromMap(data, id),
+      TipoUtente.venditore => Venditore.fromMap(data, id),
+      _ => Utente.fromMap(data, tipo, id)
+    };
+  }
+
+  @override
+  Map<String, dynamic> toFirestore(Utente data) {
+    return data.toMap();
+  }
 }

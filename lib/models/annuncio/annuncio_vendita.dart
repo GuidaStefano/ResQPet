@@ -28,8 +28,8 @@ class AnnuncioVendita extends Annuncio {
   }) : super(tipo: TipoAnnuncio.vendita);
 
   @override
-  Map<String, dynamic> toFirestore() {
-    final base = toFirestoreBase();
+  Map<String, dynamic> toMap() {
+    final base = toMapBase();
     base['dettagli_vendita'] = {
       'prezzo': prezzo,
       'dataNascita': dataNascita,
@@ -61,17 +61,6 @@ class AnnuncioVendita extends Annuncio {
       dataNascita: dettagli['dataNascita'] as Timestamp? ?? Timestamp.now(),
       numeroMicrochip: dettagli['numeroMicrochip'] as String? ?? '',
     );
-  }
-
-  /// Creates an AnnuncioVendita directly from a Firestore DocumentSnapshot.
-  factory AnnuncioVendita.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-  ) {
-    final data = snapshot.data();
-    if (data == null) {
-      throw StateError('Document snapshot has no data');
-    }
-    return AnnuncioVendita.fromMap(data, snapshot.id);
   }
 
   @override

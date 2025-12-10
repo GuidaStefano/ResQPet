@@ -1,13 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
 import 'tipo_annuncio.dart';
 import 'stato_annuncio.dart';
-import 'annuncio_vendita.dart';
-import 'annuncio_adozione.dart';
 
 /// Base class for all announcement types.
 /// Contains common fields shared between AnnuncioVendita and AnnuncioAdozione.
-abstract class Annuncio {
+abstract class Annuncio implements Copyable<Annuncio> {
   final String id;
   final String creatoreRef;
   final TipoAnnuncio tipo;
@@ -36,35 +34,9 @@ abstract class Annuncio {
     required this.statoAnnuncio,
   });
 
-  /// Factory polimorfica per deserializzazione da Firestore.
-  /// Compatibile con withConverter().
-  factory Annuncio.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options,
-  ) {
-    final data = snapshot.data();
-    final id = snapshot.id;
-    if (data == null) {
-      throw StateError('Document snapshot has no data: $id');
-    }
-
-    final tipoString = data['tipo'] as String?;
-    if (tipoString == null) {
-      throw ArgumentError('Missing "tipo" field in annuncio document: $id');
-    }
-
-    final tipo = TipoAnnuncio.fromString(tipoString);
-    switch (tipo) {
-      case TipoAnnuncio.vendita:
-        return AnnuncioVendita.fromMap(data, id);
-      case TipoAnnuncio.adozione:
-        return AnnuncioAdozione.fromMap(data, id);
-    }
-  }
-
   /// Converts the common fields to a Firestore-compatible map.
   /// Subclasses should call this and add their specific fields.
-  Map<String, dynamic> toFirestoreBase() {
+  Map<String, dynamic> toMapBase() {
     return {
       'creatore_ref': creatoreRef,
       'tipo': tipo.toFirestore(),
@@ -80,10 +52,10 @@ abstract class Annuncio {
     };
   }
 
-  /// Abstract method - each subclass must implement full serialization.
-  Map<String, dynamic> toFirestore();
+  Map<String, dynamic> toMap();
 
   /// Abstract method - each subclass must implement copyWith.
+  @override
   Annuncio copyWith({
     String? id,
     String? creatoreRef,

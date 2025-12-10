@@ -10,17 +10,18 @@ import '../models/report.dart';
 ///   descrizione   : string
 ///   cittadino_ref : string (id utente)
 ///   annuncio_ref  : string (id annuncio)
-///   stato         : string (es. "aperto", "risolto", "ignorato")
+///   stato         : string (es. "aperto", "risolto")
 ///
 /// L'id del report è il document.id di Firestore.
 class ReportDao implements Dao<Report, String> {
   final FirebaseFirestore _db;
+  final ReportFirestoreAdapter _adapter = ReportFirestoreAdapter();
 
   CollectionReference<Report> get _collection 
     => _db.collection('reports')
       .withConverter(
-        fromFirestore: Report.fromFirestore,
-        toFirestore: (report, _)  => report.toFirestore()
+        fromFirestore: (snapshot, options) => _adapter.fromFirestore(snapshot, options),
+        toFirestore: (report, _)  => _adapter.toFirestore(report)
       );
 
   ReportDao(this._db);
@@ -54,7 +55,7 @@ class ReportDao implements Dao<Report, String> {
 
     await _collection
       .doc(data.id)
-      .update(data.toFirestore());
+      .set(data);
 
     return data;
   }

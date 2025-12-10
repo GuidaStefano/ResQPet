@@ -6,6 +6,15 @@ class UtenteDao implements Dao<Utente, String> {
   static const userCollection = "utenti";
   final FirebaseFirestore _firestore;
 
+  final UtenteFirestoreAdapter _adapter = UtenteFirestoreAdapter();
+
+  CollectionReference<Utente> get _collection =>
+    _firestore.collection(userCollection)
+      .withConverter(
+        fromFirestore: (snapshot, options) => _adapter.fromFirestore(snapshot, options),
+        toFirestore: (utente, _) => _adapter.toFirestore(utente)
+      );
+
   UtenteDao(this._firestore);
 
   @override
@@ -15,33 +24,15 @@ class UtenteDao implements Dao<Utente, String> {
       throw ArgumentError("ID dell'utente non può essere vuoto. Deve corrispondere all'UID di Firebase Auth.");
     }
 
-    final doc = _firestore
-      .collection(userCollection)
-      .doc(data.id);
+    final doc = _collection.doc(data.id);
+    await doc.set(data);
 
-    await doc.set(data.toFirestore());
-
-    final ref = await doc
-      .withConverter(
-        fromFirestore: Utente.fromFirestore,
-        toFirestore: (utente, _) => utente.toFirestore(),
-      )
-      .get();
-
-    return ref.data()!;
+    return data;
   }
 
   @override
   Future<Utente?> findById(String id) async {
-    final ref = await _firestore
-      .collection(userCollection)
-      .doc(id)
-      .withConverter(
-        fromFirestore: Utente.fromFirestore,
-        toFirestore: (utente, _) => utente.toFirestore(),
-      )
-      .get();
-
+    final ref = await _collection.doc(id).get();
     return ref.data();
   }
 
@@ -52,61 +43,36 @@ class UtenteDao implements Dao<Utente, String> {
       throw ArgumentError("Impossibile aggiornare un utente senza ID.");
     }
 
-    await _firestore
-      .collection(userCollection)
-      .doc(data.id)
-      .withConverter<Utente>(
-        fromFirestore: Utente.fromFirestore,
-        toFirestore: (utente, _) => utente.toFirestore(),
-      )
+    await _collection.doc(data.id)
       .set(data);
 
-    final ref = await _firestore
-      .collection(userCollection)
-      .doc(data.id)
-      .withConverter(
-        fromFirestore: Utente.fromFirestore,
-        toFirestore: (utente, _) => utente.toFirestore(),
-      )
-      .get();
-
-    return ref.data()!;
+    return data;
   }
 
   @override
   Future<bool> deleteById(String id) async {
     try {
-      await _firestore.collection(userCollection).doc(id).delete();
+      await _collection.doc(id).delete();
       return true;
-    } catch (e) {
+    } catch (_) {
       return false;
     }
   }
 
   @override
   Future<List<Utente>> findAll() async {
-    final querySnapshot = await _firestore
-      .collection(userCollection)
-      .withConverter(
-        fromFirestore: Utente.fromFirestore,
-        toFirestore: (utente, _) => utente.toFirestore(),
-      )
-      .get();
-
+    final querySnapshot = await _collection.get();
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
 
   @override
   Stream<List<Utente>> findAllStream() {
-    return _firestore
-      .collection(userCollection)
-      .withConverter(
-        fromFirestore: Utente.fromFirestore,
-        toFirestore: (utente, _) => utente.toFirestore(),
-      )
+    return _collection
       .snapshots()
       .map((snapshot) {
-        return snapshot.docs.map((doc) => doc.data()).toList();
+        return snapshot.docs.map(
+          (doc) => doc.data()
+        ).toList();
       });
   }
 }

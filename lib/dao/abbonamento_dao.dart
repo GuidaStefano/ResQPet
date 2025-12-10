@@ -6,13 +6,15 @@ class AbbonamentoDao implements Dao<Abbonamento, String> {
   final FirebaseFirestore _firestore;
   final String _collectionPath = 'abbonamenti';
 
+  final AbbonamentoFirestoreAdapter _adapter = AbbonamentoFirestoreAdapter();
+
   AbbonamentoDao(this._firestore);
 
   CollectionReference<Abbonamento> get _collection => _firestore
     .collection(_collectionPath)
     .withConverter<Abbonamento>(
-      fromFirestore: Abbonamento.fromFirestore,
-      toFirestore: (abbonamento, _) => abbonamento.toFirestore()
+      fromFirestore: (snapshot, options) => _adapter.fromFirestore(snapshot, options),
+      toFirestore: (abbonamento, _) => _adapter.toFirestore(abbonamento)
     );
 
   @override

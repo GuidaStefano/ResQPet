@@ -7,11 +7,13 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
   static const segnalazioneCollection = "segnalazioni";
   final FirebaseFirestore _firestore;
 
+  final SegnalazioneFirestoreAdapter _adapter = SegnalazioneFirestoreAdapter();
+
   CollectionReference<Segnalazione> get _collection =>
     _firestore.collection(segnalazioneCollection)
       .withConverter(
-        fromFirestore: Segnalazione.fromFirestore,
-        toFirestore: (segnalazione, _) => segnalazione.toFirestore()
+        fromFirestore:(snapshot, options) => _adapter.fromFirestore(snapshot, options),
+        toFirestore: (segnalazione, _) => _adapter.toFirestore(segnalazione)
       );
 
   SegnalazioneDao(this._firestore);

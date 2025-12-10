@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/adapters/firestore_adapter.dart';
+import 'package:resqpet/core/utils/copyable.dart';
 
 enum StatoReport {
   aperto("aperto"),
@@ -23,8 +25,8 @@ enum StatoReport {
 ///   descrizione   -> descrizione estesa
 ///   cittadinoRef  -> riferimento all'utente che ha creato il report (utenti/_id)
 ///   annuncioRef   -> riferimento all'annuncio segnalato (annunci/_id)
-///   stato         -> stato del report (es. "aperto", "risolto", "ignorato")
-class Report {
+///   stato         -> stato del report (es. "aperto", "risolto")
+class Report implements Copyable<Report> {
   final String id;
   final String motivazione;
   final String descrizione;
@@ -58,6 +60,7 @@ class Report {
     );
   }
 
+  @override
   Report copyWith({
     String? id,
     String? motivazione,
@@ -75,18 +78,20 @@ class Report {
       stato: stato ?? this.stato,
     );
   }
+}
 
-  /// Mappa dalle chiavi JSON/Firestore alla nostra entity.
-  /// NOTA: l'id del documento NON è salvato nel documento, ma arriva da Firestore (doc.id).
-  factory Report.fromFirestore(
+
+
+class ReportFirestoreAdapter implements FirestoreAdapter<Report> {
+  @override
+  Report fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options
-  ) {
-
+    [SnapshotOptions? options]
+  ){
     final data = snapshot.data();
 
     if(data == null) {
-      throw ArgumentError.notNull("snapshot.data");
+      throw ArgumentError.notNull("snapshot.data()");
     }
 
     return Report(
@@ -97,19 +102,18 @@ class Report {
       annuncioRef: data['annuncio_ref'] as String? ?? '',
       stato: StatoReport.fromString(
         data['stato'] as String? ?? StatoReport.aperto.stato
-      ),
+      )
     );
   }
 
-  /// Conversione a JSON per Firestore.
-  /// L'id NON viene incluso: Firestore usa l'id del documento, non un campo "id".
-  Map<String, dynamic> toFirestore() {
+  @override
+  Map<String, dynamic> toFirestore(Report report) {
     return {
-      'motivazione': motivazione,
-      'descrizione': descrizione,
-      'cittadino_ref': cittadinoRef,
-      'annuncio_ref': annuncioRef,
-      'stato': stato.toFirestore(),
+      'motivazione': report.motivazione,
+      'descrizione': report.descrizione,
+      'cittadino_ref': report.cittadinoRef,
+      'annuncio_ref': report.annuncioRef,
+      'stato': report.stato.toFirestore(),
     };
   }
 }
