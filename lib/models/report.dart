@@ -93,13 +93,13 @@ class ReportFirestoreAdapter implements FirestoreAdapter<Report> {
     if(data == null) {
       throw ArgumentError.notNull("snapshot.data()");
     }
-    
+
     return Report(
       id: snapshot.id,
       motivazione: data['motivazione'] as String? ?? '',
       descrizione: data['descrizione'] as String? ?? '',
-      cittadinoRef: data['cittadinoRef'] as String? ?? '',
-      annuncioRef: data['annuncioRef'] as String? ?? '',
+      cittadinoRef: data['cittadino_ref'] as String? ?? '',
+      annuncioRef: data['annuncio_ref'] as String? ?? '',
       stato: StatoReport.fromString(
         data['stato'] as String? ?? StatoReport.aperto.stato
       )
@@ -111,8 +111,8 @@ class ReportFirestoreAdapter implements FirestoreAdapter<Report> {
     return {
       'motivazione': report.motivazione,
       'descrizione': report.descrizione,
-      'cittadinoRef': report.cittadinoRef,
-      'annuncioRef': report.annuncioRef,
+      'cittadino_ref': report.cittadinoRef,
+      'annuncio_ref': report.annuncioRef,
       'stato': report.stato.toFirestore(),
     };
   }
