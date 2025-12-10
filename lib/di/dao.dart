@@ -1,3 +1,4 @@
+import 'package:resqpet/dao/abbonamento_dao.dart';
 import 'package:resqpet/dao/annuncio_dao.dart';
 import 'package:resqpet/dao/report_dao.dart';
 import 'package:resqpet/dao/segnalazione_dao.dart';
@@ -29,4 +30,10 @@ ReportDao reportDao(Ref ref) {
 SegnalazioneDao segnalazioneDao(Ref ref) {
   final firebaseFirestore = ref.read(firebaseFirestoreProvider);
   return SegnalazioneDao(firebaseFirestore);
+}
+
+@riverpod
+AbbonamentoDao abbonamentoDao(Ref ref) {
+  final firebaseFirestore = ref.read(firebaseFirestoreProvider);
+  return AbbonamentoDao(firebaseFirestore);
 }
