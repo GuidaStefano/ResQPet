@@ -32,6 +32,30 @@ class AnnuncioRepository{
     return _annuncioDao.findByStatoAndTipoStream(stato, tipo);
   }
 
+  Future<List<Annuncio>> getAnnunciByCreatore(String creatoreRef) async {
+    return await _annuncioDao.findByCreatore(creatoreRef);
+  }
+
+  Stream<List<Annuncio>> getAnnunciByCreatoreStream(String creatoreRef) {
+    return _annuncioDao.findByCreatoreStream(creatoreRef);
+  }
+
+  Future<List<Annuncio>> getAnnunciBySpecie(String specie) async {
+    return await _annuncioDao.findBySpecie(specie);
+  }
+
+  Stream<List<Annuncio>> getAnnunciBySpecieStream(String specie) {
+    return _annuncioDao.findBySpecieStream(specie);
+  }
+
+  Future<List<Annuncio>> getAnnunciByRazza(String razza) async {
+    return await _annuncioDao.findByRazza(razza);
+  }
+
+  Stream<List<Annuncio>> getAnnunciByRazzaStream(String razza) {
+    return _annuncioDao.findByRazzaStream(razza);
+  }
+
   Future<Annuncio> creaAnnuncio(Annuncio annuncio) async {
     return await _annuncioDao.create(annuncio);
   }
