@@ -56,6 +56,14 @@ class AnnuncioRepository{
     return _annuncioDao.findByRazzaStream(razza);
   }
 
+  Future<List<Annuncio>> getAnnunciBySesso(String sesso) async {
+    return await _annuncioDao.findByRazza(sesso);
+  }
+
+  Stream<List<Annuncio>> getAnnunciBySessoStream(String sesso) {
+    return _annuncioDao.findByRazzaStream(sesso);
+  }
+
   Future<Annuncio> creaAnnuncio(Annuncio annuncio) async {
     return await _annuncioDao.create(annuncio);
   }
