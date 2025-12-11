@@ -9,7 +9,7 @@ class AnnuncioRepository{
   AnnuncioRepository(this._annuncioDao);
 
   Future<List<Annuncio>> getAnnunciVendita() async {
-    return await _annuncioDao.findByTipo(TipoAnnuncio.vendita);
+    return await _annuncioDao.findActiveByTipo(TipoAnnuncio.vendita);
   }
 
   Stream<List<Annuncio>> getAnnunciVenditaStream() {
@@ -17,7 +17,7 @@ class AnnuncioRepository{
   }
 
   Future<List<Annuncio>> getAnnunciAdozione() async {
-    return await _annuncioDao.findByTipo(TipoAnnuncio.adozione);
+    return await _annuncioDao.findActiveByTipo(TipoAnnuncio.adozione);
   }
 
   Stream<List<Annuncio>> getAnnunciAdozioneStream() {
@@ -34,5 +34,23 @@ class AnnuncioRepository{
 
   Future<Annuncio> creaAnnuncio(Annuncio annuncio) async {
     return await _annuncioDao.create(annuncio);
+  }
+
+  Future<Annuncio> finalizzaAnnuncio(String annuncioId) async {
+    final Annuncio? annuncio = await _annuncioDao.findById(annuncioId);
+
+    if(annuncio == null) {
+      throw StateError("Annuncio non esistente");
+    }
+
+    return annuncio.copyWith(statoAnnuncio: StatoAnnuncio.concluso);
+  }
+
+  Future<bool> cancellaAnnuncio(String annuncioId) async {
+    return await _annuncioDao.deleteById(annuncioId);
+  }
+
+  Future<Annuncio> aggiornaAnnuncio(Annuncio annuncio) async {
+    return await _annuncioDao.update(annuncio);
   }
 }
