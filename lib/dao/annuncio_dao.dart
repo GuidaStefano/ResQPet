@@ -162,6 +162,41 @@ class AnnuncioDao implements Dao<Annuncio, String> {
     final snap = await _collection.where('specie', isEqualTo: specie).get();
     return snap.docs.map((d) => d.data()).toList();
   }
+  /// Returns a stream of announcements filtered by species.
+  Stream<List<Annuncio>> findBySpecieStream(String specie) {
+    return _collection
+        .where('specie', isEqualTo: specie)
+        .snapshots()
+        .map((query) => query.docs.map((d) => d.data()).toList());
+  }
+
+  /// Finds announcements by race.
+  Future<List<Annuncio>> findByRazza(String razza) async {
+    final snap = await _collection.where('razza', isEqualTo: razza).get();
+    return snap.docs.map((d) => d.data()).toList();
+  }
+
+  /// Returns a stream of announcements filtered by race.
+  Stream<List<Annuncio>> findByRazzaStream(String razza) {
+    return _collection
+        .where('razza', isEqualTo: razza)
+        .snapshots()
+        .map((query) => query.docs.map((d) => d.data()).toList());
+  }
+
+  /// Finds announcements by sex.
+  Future<List<Annuncio>> findBySesso(String sesso) async {
+    final snap = await _collection.where('sesso', isEqualTo: sesso).get();
+    return snap.docs.map((d) => d.data()).toList();
+  }
+
+  // Returns a stream of announcements filtered by sex.
+  Stream<List<Annuncio>> findBySessoStream(String sesso) {
+    return _collection
+        .where('sesso', isEqualTo: sesso)
+        .snapshots()
+        .map((query) => query.docs.map((d) => d.data()).toList());
+  }
 
   /// Updates only the status of an announcement.
   /// More efficient than updating the entire document.
