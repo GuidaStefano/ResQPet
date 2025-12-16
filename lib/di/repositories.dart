@@ -1,6 +1,7 @@
 import 'package:resqpet/di/dao.dart';
 import 'package:resqpet/di/services.dart';
 import 'package:resqpet/repositories/abbonamento_repository.dart';
+import 'package:resqpet/repositories/auth_repository.dart';
 import 'package:resqpet/repositories/report_repository.dart';
 import 'package:resqpet/repositories/segnalazione_repository.dart';
 import 'package:resqpet/repositories/stripe_repository.dart';
@@ -56,4 +57,10 @@ SegnalazioneRepository segnalazioneRepository(Ref ref) {
     storageService: storageService, 
     authService: authService
   );
+}
+
+@riverpod
+AuthRepository authRepository(Ref ref) {
+  final authService = ref.read(authServiceProvider);
+  return AuthRepository(authService);
 }
