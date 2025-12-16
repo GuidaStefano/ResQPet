@@ -1,6 +1,7 @@
 import 'package:resqpet/di/dao.dart';
 import 'package:resqpet/di/services.dart';
 import 'package:resqpet/repositories/abbonamento_repository.dart';
+import 'package:resqpet/repositories/annuncio_repository.dart';
 import 'package:resqpet/repositories/auth_repository.dart';
 import 'package:resqpet/repositories/report_repository.dart';
 import 'package:resqpet/repositories/segnalazione_repository.dart';
@@ -63,4 +64,10 @@ SegnalazioneRepository segnalazioneRepository(Ref ref) {
 AuthRepository authRepository(Ref ref) {
   final authService = ref.read(authServiceProvider);
   return AuthRepository(authService);
+}
+
+@riverpod
+AnnuncioRepository annuncioRepository(Ref ref) {
+  final annuncioDao = ref.read(annuncioDaoProvider);
+  return AnnuncioRepository(annuncioDao: annuncioDao);
 }
