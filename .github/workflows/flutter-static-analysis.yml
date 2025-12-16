@@ -3,8 +3,8 @@ on:
   pull_request:
     types:
       - opened
-    branches:
-      - '**'
+    branches-ignore:
+      - main
 jobs:
   main:
     runs-on: macos-latest
