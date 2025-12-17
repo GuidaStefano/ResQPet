@@ -66,6 +66,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   children: [
                     ResQPetTextField(
                       controller: _emailController,
+                      prefixIcon: Icon(Icons.email_outlined),
                       textInputType: TextInputType.emailAddress,
                       label: 'Email',
                       validator: (value) => 
