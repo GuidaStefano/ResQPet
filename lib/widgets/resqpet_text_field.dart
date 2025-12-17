@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class TextField extends StatelessWidget {
+class ResQPetTextField extends StatelessWidget {
 
   final String label;
   final TextInputType textInputType;
   final TextEditingController? controller;
   final String? Function(String? value)? validator;
 
-  const TextField({
+  const ResQPetTextField({
     super.key,
     required this.label,
     this.textInputType = TextInputType.text,
