@@ -11,7 +11,7 @@ abstract class Annuncio implements Copyable<Annuncio> {
   final TipoAnnuncio tipo;
   final String nome;
   final String sesso;
-  final String peso;
+  final double peso;
   final String colorePelo;
   final bool isSterilizzato;
   final String specie;
@@ -62,7 +62,7 @@ abstract class Annuncio implements Copyable<Annuncio> {
     TipoAnnuncio? tipo,
     String? nome,
     String? sesso,
-    String? peso,
+    double? peso,
     String? colorePelo,
     bool? isSterilizzato,
     String? specie,

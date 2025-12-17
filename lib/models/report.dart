@@ -91,7 +91,7 @@ class ReportFirestoreAdapter implements FirestoreAdapter<Report> {
     final data = snapshot.data();
 
     if(data == null) {
-      throw ArgumentError.notNull("snapshot.data()");
+      throw ArgumentError.notNull('snapshot.data()');
     }
 
     return Report(

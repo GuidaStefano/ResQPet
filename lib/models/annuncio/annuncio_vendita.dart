@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'annuncio.dart';
 import 'tipo_annuncio.dart';
 import 'stato_annuncio.dart';
@@ -7,7 +5,7 @@ import 'stato_annuncio.dart';
 /// Represents a sale announcement with specific fields for selling animals.
 class AnnuncioVendita extends Annuncio {
   final double prezzo;
-  final Timestamp dataNascita;
+  final String dataNascita;
   final String numeroMicrochip;
 
   const AnnuncioVendita({
@@ -48,7 +46,7 @@ class AnnuncioVendita extends Annuncio {
       creatoreRef: map['creatore_ref'] as String? ?? '',
       nome: map['nome'] as String? ?? '',
       sesso: map['sesso'] as String? ?? '',
-      peso: map['peso'] as String? ?? '',
+      peso: map['peso'] as double? ?? 0.0,
       colorePelo: map['colorePelo'] as String? ?? '',
       isSterilizzato: map['isSterelizzato'] as bool? ?? false,
       specie: map['specie'] as String? ?? '',
@@ -58,7 +56,7 @@ class AnnuncioVendita extends Annuncio {
         map['statoAnnuncio'] as String? ?? 'ATTIVO',
       ),
       prezzo: (dettagli['prezzo'] as num?)?.toDouble() ?? 0.0,
-      dataNascita: dettagli['dataNascita'] as Timestamp? ?? Timestamp.now(),
+      dataNascita: dettagli['dataNascita'] ?? '',
       numeroMicrochip: dettagli['numeroMicrochip'] as String? ?? '',
     );
   }
@@ -70,7 +68,7 @@ class AnnuncioVendita extends Annuncio {
     TipoAnnuncio? tipo, // Ignored - tipo is fixed for this class
     String? nome,
     String? sesso,
-    String? peso,
+    double? peso,
     String? colorePelo,
     bool? isSterilizzato,
     String? specie,
@@ -78,7 +76,7 @@ class AnnuncioVendita extends Annuncio {
     List<String>? foto,
     StatoAnnuncio? statoAnnuncio,
     double? prezzo,
-    Timestamp? dataNascita,
+    String? dataNascita,
     String? numeroMicrochip,
   }) {
     return AnnuncioVendita(
