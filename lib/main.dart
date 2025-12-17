@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:resqpet/theme.dart';
 import 'firebase_options.dart';
 
 import 'package:resqpet/core/config/stripe.dart' as stripe_config;
@@ -31,10 +32,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
+      title: 'ResQPet',
+      theme: resqpetTheme,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
