@@ -6,17 +6,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'firebase.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 FirebaseAuth firebaseAuth(Ref ref) {
   return FirebaseAuth.instance;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 FirebaseStorage firebaseStorage(Ref ref) {
   return FirebaseStorage.instance;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 FirebaseFirestore firebaseFirestore(Ref ref) {
   return FirebaseFirestore.instance;
 }
