@@ -6,7 +6,7 @@ import 'stato_annuncio.dart';
 class AnnuncioAdozione extends Annuncio {
   final String storia;
   final String noteSanitarie;
-  final String contributoSpeseSanitarie;
+  final double contributoSpeseSanitarie;
   final String carattere;
 
   const AnnuncioAdozione({
@@ -49,7 +49,7 @@ class AnnuncioAdozione extends Annuncio {
       creatoreRef: map['creatore_ref'] as String? ?? '',
       nome: map['nome'] as String? ?? '',
       sesso: map['sesso'] as String? ?? '',
-      peso: map['peso'] as String? ?? '',
+      peso: map['peso'] as double? ?? 0.0,
       colorePelo: map['colorePelo'] as String? ?? '',
       isSterilizzato: map['isSterelizzato'] as bool? ?? false,
       specie: map['specie'] as String? ?? '',
@@ -60,8 +60,7 @@ class AnnuncioAdozione extends Annuncio {
       ),
       storia: dettagli['storia'] as String? ?? '',
       noteSanitarie: dettagli['noteSanitarie'] as String? ?? '',
-      contributoSpeseSanitarie:
-          dettagli['contributoSpeseSanitarie'] as String? ?? '',
+      contributoSpeseSanitarie: dettagli['contributoSpeseSanitarie'] as double? ?? 0.0,
       carattere: dettagli['carattere'] as String? ?? '',
     );
   }
@@ -73,7 +72,7 @@ class AnnuncioAdozione extends Annuncio {
     TipoAnnuncio? tipo, // Ignored - tipo is fixed for this class
     String? nome,
     String? sesso,
-    String? peso,
+    double? peso,
     String? colorePelo,
     bool? isSterilizzato,
     String? specie,
@@ -82,7 +81,7 @@ class AnnuncioAdozione extends Annuncio {
     StatoAnnuncio? statoAnnuncio,
     String? storia,
     String? noteSanitarie,
-    String? contributoSpeseSanitarie,
+    double? contributoSpeseSanitarie,
     String? carattere,
   }) {
     return AnnuncioAdozione(

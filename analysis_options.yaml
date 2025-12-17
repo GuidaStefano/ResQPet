@@ -24,7 +24,6 @@ linter:
     - prefer_const_declarations: true
     - avoid_unnecessary_containers: true
     - avoid_print: true
-    - prefer_single_quotes: true
     - always_declare_return_types: true
     - unnecessary_const: true
     - no_literal_bool_comparisons: true

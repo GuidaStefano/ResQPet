@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resqpet/core/utils/regex.dart';
 
 import 'package:resqpet/dao/utente_dao.dart';
 import 'package:resqpet/models/utente.dart';
@@ -88,6 +89,55 @@ class UtenteRepository {
     required String sedeLegale,
     required String partitaIVA,
   }) async {
+
+    if (!emailRegex.hasMatch(email)) {
+      throw ArgumentError.value(
+        email,
+        'email',
+        'Email non valida',
+      );
+    }
+
+    if (!min8PasswordRegex.hasMatch(password)) {
+      throw ArgumentError.value(
+        password,
+        'password',
+        'La password deve contenere almeno 8 caratteri',
+      );
+    }
+
+    if (nominativo.trim().isEmpty) {
+      throw ArgumentError.value(
+        nominativo,
+        'nominativo',
+        'Il nominativo non può essere vuoto',
+      );
+    }
+
+    if (!italianPhoneRegex.hasMatch(numeroTelefono)) {
+      throw ArgumentError.value(
+        numeroTelefono,
+        'numeroTelefono',
+        'Numero di telefono non valido',
+      );
+    }
+    
+    if (sedeLegale.trim().isEmpty) {
+      throw ArgumentError.value(
+        sedeLegale,
+        'sedeLegale',
+        'La sede legale non può essere vuota',
+      );
+    }
+
+    if (!partitaIvaRegex.hasMatch(partitaIVA)) {
+      throw ArgumentError.value(
+        partitaIVA,
+        'partitaIVA',
+        'Partita IVA non valida',
+      );
+    }
+
     final userCredential = await _authService.signUp(email, password);
     final uid = userCredential.user!.uid;
 
@@ -122,9 +172,42 @@ class UtenteRepository {
     required String numeroTelefono,
     required TipoUtente tipo,
   }) async {
+
+    if (!emailRegex.hasMatch(email)) {
+      throw ArgumentError.value(
+        email,
+        'email',
+        'Email non valida',
+      );
+    }
+
+    if (!min8PasswordRegex.hasMatch(password)) {
+      throw ArgumentError.value(
+        password,
+        'password',
+        'La password deve contenere almeno 8 caratteri',
+      );
+    }
+
+    if (nominativo.trim().isEmpty) {
+      throw ArgumentError.value(
+        nominativo,
+        'nominativo',
+        'Il nominativo non può essere vuoto',
+      );
+    }
+
+    if (!italianPhoneRegex.hasMatch(numeroTelefono)) {
+      throw ArgumentError.value(
+        numeroTelefono,
+        'numeroTelefono',
+        'Numero di telefono non valido',
+      );
+    }
+    
     final userCredential = await _authService.signUp(email, password);
     final uid = userCredential.user!.uid;
-
+    
     final utente = Utente(
       id: uid,
       nominativo: nominativo,
@@ -133,8 +216,7 @@ class UtenteRepository {
       dataCreazione: Timestamp.now(),
       tipo: tipo,
     );
-
-    await _utenteDao.create(utente);
-    return utente;
+    
+    return await _utenteDao.create(utente);
   }
 }

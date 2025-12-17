@@ -7,7 +7,7 @@ class Abbonamento implements Copyable<Abbonamento> {
   final String descrizione;
   final double prezzo;
   final int maxAnnunciVendita;
-  final int annunciPriority;
+  final int percentualeGuadagni;
   final int durataInMesi;
 
   Abbonamento({
@@ -15,7 +15,7 @@ class Abbonamento implements Copyable<Abbonamento> {
     required this.descrizione,
     required this.prezzo,
     required this.maxAnnunciVendita,
-    required this.annunciPriority,
+    required this.percentualeGuadagni,
     required this.durataInMesi,
   });
 
@@ -25,7 +25,7 @@ class Abbonamento implements Copyable<Abbonamento> {
     String? descrizione,
     double? prezzo,
     int? maxAnnunciVendita,
-    int? annunciPriority,
+    int? percentualeGuadagni,
     int? durataInMesi,
   }) {
     return Abbonamento(
@@ -33,7 +33,7 @@ class Abbonamento implements Copyable<Abbonamento> {
       descrizione: descrizione ?? this.descrizione,
       prezzo: prezzo ?? this.prezzo,
       maxAnnunciVendita: maxAnnunciVendita ?? this.maxAnnunciVendita,
-      annunciPriority: annunciPriority ?? this.annunciPriority,
+      percentualeGuadagni: percentualeGuadagni ?? this.percentualeGuadagni,
       durataInMesi: durataInMesi ?? this.durataInMesi,
     );
   }
@@ -56,7 +56,7 @@ class AbbonamentoFirestoreAdapter implements FirestoreAdapter<Abbonamento> {
       descrizione: data['descrizione'] as String? ?? '',
       prezzo: (data['prezzo'] as num?)?.toDouble() ?? 0.0,
       maxAnnunciVendita: data['maxAnnunciVendita'] as int? ?? 0,
-      annunciPriority: data['annunciPriority'] as int? ?? 0,
+      percentualeGuadagni: data['percentualeGuadagni'] as int? ?? 0,
       durataInMesi: data['durataInMesi'] as int? ?? 0 
     );
   }
@@ -67,7 +67,7 @@ class AbbonamentoFirestoreAdapter implements FirestoreAdapter<Abbonamento> {
       'descrizione': abbonamento.descrizione,
       'prezzo': abbonamento.prezzo,
       'maxAnnunciVendita': abbonamento.maxAnnunciVendita,
-      'annunciPriority': abbonamento.annunciPriority,
+      'percentualeGuadagni': abbonamento.percentualeGuadagni,
       'durataInMesi': abbonamento.durataInMesi,
     };
   }
