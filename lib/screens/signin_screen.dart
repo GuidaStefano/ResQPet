@@ -2,8 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/signin_controller.dart';
 import 'package:resqpet/core/utils/regex.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/password_text_filed.dart';
 import 'package:resqpet/widgets/resqpet_button.dart';
@@ -110,7 +112,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       ),
                       text: "Registati",
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {}
+                        ..onTap = () => context.pushNamed(Routes.signUp.name)
                     )
                   ]
                 )
