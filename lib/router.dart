@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/di/services.dart';
+import 'package:resqpet/screens/home_screen.dart';
 import 'package:resqpet/screens/signin_screen.dart';
 import 'package:resqpet/screens/signup_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -59,7 +60,7 @@ GoRouter router(Ref ref) {
       GoRoute(
         name: Routes.home.name,
         path: '/',
-        builder: (context, _) => const Placeholder()
+        builder: (context, _) => const HomeScreen()
       ),
       GoRoute(
         path: Routes.signIn.path,
