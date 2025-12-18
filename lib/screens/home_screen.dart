@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/abbonamento_controller.dart';
 import 'package:resqpet/controllers/dati_utente_controller.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/models/utente.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 
 class HomeCard extends StatelessWidget {
@@ -137,7 +138,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  List<Widget> bodyCittadino() {
+  List<Widget> bodyCittadino(BuildContext context) {
     return [
       Text(
         "La tua app, la loro sicurezza,\nSegnala, Adotta, connetti.",
@@ -183,7 +184,7 @@ class HomeScreen extends ConsumerWidget {
     ];
   }
 
-  List<Widget> bodyEnte() {
+  List<Widget> bodyEnte(BuildContext context) {
     return [
       const Text(
         'Pannello Ente',
@@ -207,7 +208,7 @@ class HomeScreen extends ConsumerWidget {
     ];
   }
 
-  List<Widget> bodyVenditore() {
+  List<Widget> bodyVenditore(BuildContext context) {
     return [
       const Text(
         'Pannello Venditore',
@@ -236,7 +237,7 @@ class HomeScreen extends ConsumerWidget {
     ];
   }
 
-  List<Widget> bodySoccorritore() {
+  List<Widget> bodySoccorritore(BuildContext context) {
     return [
       const Text(
         'Pannello Soccorritore',
@@ -251,6 +252,7 @@ class HomeScreen extends ConsumerWidget {
         title: 'VISUALIZZA MAPPA',
         description: 'Visualizza la mappa delle segnalazioni',
         icon: Icons.map_sharp,
+        onTitleTap: () => context.pushNamed(Routes.map.name),
       ),
       HomeCard.icon(
         title: 'VISUALIZZA SEGNALAZIONI',
@@ -260,7 +262,7 @@ class HomeScreen extends ConsumerWidget {
     ];
   }
 
-  List<Widget> bodyAdmin() {
+  List<Widget> bodyAdmin(BuildContext context) {
     return [
       const Text(
         'Pannello di amministrazione',
@@ -321,11 +323,11 @@ class HomeScreen extends ConsumerWidget {
                         }
                       ),
                       ...switch(utente.tipo) {
-                        TipoUtente.admin => bodyAdmin(),
-                        TipoUtente.cittadino => bodyCittadino(),
-                        TipoUtente.soccorritore => bodySoccorritore(),
-                        TipoUtente.venditore => bodyVenditore(),
-                        TipoUtente.ente => bodyEnte(),
+                        TipoUtente.admin => bodyAdmin(context),
+                        TipoUtente.cittadino => bodyCittadino(context),
+                        TipoUtente.soccorritore => bodySoccorritore(context),
+                        TipoUtente.venditore => bodyVenditore(context),
+                        TipoUtente.ente => bodyEnte(context),
                       }
                     ],
                   ),
@@ -434,15 +436,4 @@ class HomeScreen extends ConsumerWidget {
     );
   }
   
-}
-
-@Preview(name: "Home", size: Size(400, 800))
-Widget homePreview() {
-  return ProviderScope(
-    child: MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: resqpetTheme,
-      home: HomeScreen(),
-    )
-  );
 }

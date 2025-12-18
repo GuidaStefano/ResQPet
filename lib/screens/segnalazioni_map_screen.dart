@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:resqpet/controllers/segnalazioni_controller.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/theme.dart';
 
@@ -26,7 +26,6 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
   static const LatLng italyCoordinates = LatLng(41.8719, 12.5674);
 
   late final MapController _mapController;
-  bool isLoading = true;
   double _zoomLevel = initialZoom;
 
   LatLng _currentLatLng = italyCoordinates;
@@ -112,16 +111,15 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final segnalazioniVicine = ref.watch(segnalazioniVicineProvider(_currentLatLng));
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Mapp Segnalazioni"),
       ),
       body: Stack(
         children: [
-          if(isLoading) Align(
-            alignment: AlignmentGeometry.center,
-            child: const CircularProgressIndicator(),
-          ),
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
@@ -134,7 +132,35 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.resqpet.app',
-              )
+              ),
+              segnalazioniVicine.whenOrNull(
+                data: (segnalazioni) {
+
+                  final markers = segnalazioni.map((segnalazione) {
+                    return Marker(
+                      point: LatLng(
+                        segnalazione.posizione.latitude,
+                        segnalazione.posizione.latitude
+                      ), 
+                      child: IconButton(
+                        onPressed: () {
+                          // TODO: vai alla schermata dei dettagli della segnalazione
+                        },
+                        icon: Icon(
+                          Icons.pets_outlined,
+                          color: Colors.red,
+                        )
+                      )
+                    );
+                  })
+                  .toList();
+
+                  return MarkerLayer(
+                    markers: markers
+                  );
+                },
+              ) 
+              ?? MarkerLayer(markers: [])
             ]
           ),
           Align(
@@ -163,17 +189,9 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
                 ],
               ),
             )
-          )
+          ),
         ],
       )
     );
   }
-}
-
-@Preview(name: "Mappa Segnalazioni", size: Size(400, 700))
-Widget mappaSegnalazioni() {
-  return MaterialApp(
-    theme: resqpetTheme,
-    home: SegnalazioniMapScreen(),
-  );
 }

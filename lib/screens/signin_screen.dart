@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/signin_controller.dart';
@@ -128,14 +127,4 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       ),
     );
   }
-}
-
-@Preview(name: "SignIn", size: Size(400, 800))
-Widget signInPreview() {
-  return ProviderScope(
-    child: MaterialApp(
-      theme: resqpetTheme,
-      home: const SignInScreen(),
-    )
-  );
 }

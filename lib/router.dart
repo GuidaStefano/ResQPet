@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/di/services.dart';
 import 'package:resqpet/screens/home_screen.dart';
+import 'package:resqpet/screens/segnalazioni_map_screen.dart';
 import 'package:resqpet/screens/signin_screen.dart';
 import 'package:resqpet/screens/signup_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -25,6 +26,7 @@ class Routes {
   static const home =  Route(name: 'home', path: '/');
   static const signIn = Route(name: 'signin', path: '/signin');
   static const signUp = Route(name: 'signup', path: '/signup');
+  static const map = Route(name: 'map', path: '/map');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -72,6 +74,11 @@ GoRouter router(Ref ref) {
         name: Routes.signUp.name,
         builder: (context, _) => const SignUpScreen()
       ),
+      GoRoute(
+        name: Routes.map.name,
+        path: Routes.map.path,
+        builder: (context, _) => const SegnalazioniMapScreen()
+      )
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),
     redirect: (context, state) {
