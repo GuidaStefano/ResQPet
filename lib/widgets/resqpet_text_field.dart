@@ -5,6 +5,7 @@ class ResQPetTextField extends StatelessWidget {
   final String label;
   final TextInputType textInputType;
   final TextEditingController? controller;
+  final Icon? prefixIcon;
   final String? Function(String? value)? validator;
 
   const ResQPetTextField({
@@ -12,7 +13,8 @@ class ResQPetTextField extends StatelessWidget {
     required this.label,
     this.textInputType = TextInputType.text,
     this.controller,
-    this.validator
+    this.validator,
+    this.prefixIcon
   });
 
   @override
@@ -23,7 +25,7 @@ class ResQPetTextField extends StatelessWidget {
       keyboardType: textInputType,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(Icons.email_outlined),
+        prefixIcon: prefixIcon,
         border: OutlineInputBorder(),
         filled: true,
       ),
