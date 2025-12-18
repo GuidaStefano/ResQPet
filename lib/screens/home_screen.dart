@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:resqpet/controllers/abbonamento_controller.dart';
 import 'package:resqpet/controllers/dati_utente_controller.dart';
+import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/theme.dart';
 
@@ -367,8 +369,37 @@ class HomeScreen extends ConsumerWidget {
               label: const Text("Crea Annuncio")
             ),
             TipoUtente.venditore => FloatingActionButton.extended(
-              onPressed: () {
-                // Todo: CONTROLLARE se il venditore puo' creare annunci
+              onPressed: () async {
+                
+                try {
+                  final isAbbonamentoExpired = await ref.read(isAbbonamentoExpiredProvider.future);
+                  
+                  if(isAbbonamentoExpired) {
+                    
+                    if(context.mounted) {
+                      showErrorSnackBar(context, "Il tuo abbonamento e' scaduto.");
+                    }
+                    
+                    return;
+                  }
+
+                  final canPublish = await ref.read(canPublishMoreAdProvider.future);
+
+                  if(!canPublish) {
+                    if(context.mounted) {
+                      showErrorSnackBar(context, "Hai superato il limite di annunci consentito.");
+                    }
+
+                    return;
+                  }
+
+                  // TODO: crea annuncio
+
+                } catch(_) {
+                  if(context.mounted) {
+                    showErrorSnackBar(context, "Impossibile creare un nuovo annuncio.");
+                  }
+                }
               },
               icon: Icon(Icons.add, color: Colors.white),
               label: const Text("Crea Annuncio")
