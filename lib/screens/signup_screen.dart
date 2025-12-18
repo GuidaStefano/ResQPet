@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/abbonamento_controller.dart';
 import 'package:resqpet/controllers/signup_controller.dart';
 import 'package:resqpet/core/utils/regex.dart';
@@ -8,6 +9,7 @@ import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/core/utils/theme.dart';
 import 'package:resqpet/models/abbonamento.dart';
 import 'package:resqpet/models/utente.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/password_text_filed.dart';
 import 'package:resqpet/widgets/resqpet_text_field.dart';
@@ -170,7 +172,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       }
 
       if(state is SignUpSuccess) {
-        // TODO: vai alla schermata di login
+        context.goNamed(Routes.signIn.name);
       }
     });
 

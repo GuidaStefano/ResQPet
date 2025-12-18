@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:resqpet/screens/signin_screen.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 import 'firebase_options.dart';
 
@@ -27,15 +27,15 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
       title: 'ResQPet',
       theme: resqpetTheme,
-      home: const SignInScreen(),
+      routerConfig: ref.read(routerProvider)
     );
   }
 }
