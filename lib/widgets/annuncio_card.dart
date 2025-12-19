@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:resqpet/controllers/dati_utente_controller.dart';
+import 'package:resqpet/controllers/image_controller.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
-import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
+import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/theme.dart';
+import 'package:resqpet/widgets/image_carousel.dart';
 
-class AnnuncioCard extends StatelessWidget {
+class AnnuncioCard extends ConsumerWidget {
   final Annuncio annuncio;
   final void Function()? onViewDetailsClick;
 
@@ -14,40 +18,59 @@ class AnnuncioCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final imagesAsyncValue = ref.watch(getImagesFromCloudProvider(annuncio.foto));
+    final datiUtenteAsyncValue = ref.watch(datiUtenteByIdProvider(annuncio.creatoreRef));
+
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: Row(
-              spacing: 10,
-              children: [
-                Icon(Icons.account_circle),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      annuncio.tipo == TipoAnnuncio.vendita ? "Privato" : "Canile",
-                      style: TextStyle(fontWeight: FontWeight.w800),
+          datiUtenteAsyncValue.when(
+            data: (utente) => Padding(
+              padding: EdgeInsets.all(10),
+              child: Row(
+                spacing: 10,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: ResQPetColors.primaryVariant,
+                    child: Text(
+                      utente.nominativo[0],
+                      style: const TextStyle(
+                        color: ResQPetColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    const Text("Indirizzo"),
-                  ],
-                ),
-                Spacer(),
-                Icon(Icons.more_vert),
-              ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        utente.nominativo,
+                        style: TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                      if(utente is Ente) Text(utente.sedeLegale),
+                      if(utente is Venditore) Text(utente.indirizzo)
+                    ],
+                  ),
+                  Spacer(),
+                  Icon(Icons.more_vert),
+                ],
+              ),
             ),
+            loading: () => CircularProgressIndicator(),
+            error: (error, _) => SizedBox()
           ),
-          SizedBox(
-            child: Image.network(
-              annuncio.foto.first,
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
+          imagesAsyncValue.when(
+            data: (images) => ImageCarousel(
+              images: images, isSourceNetwork: true
             ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            error: (error, _) => SizedBox(),
           ),
           Padding(
             padding: EdgeInsetsGeometry.all(15),
@@ -70,26 +93,13 @@ class AnnuncioCard extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: ResQPetColors.white,
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        'Vedi Dettagli',
-                        style: TextStyle(
-                          color: ResQPetColors.onBackground,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
                         backgroundColor: ResQPetColors.accent,
                       ),
                       onPressed: () {
                         onViewDetailsClick?.call();
                       },
                       child: Text(
-                        annuncio.tipo == TipoAnnuncio.vendita ? "Compra" : "Adotta",
+                        "Vedi Dettagli",
                         style: TextStyle(
                           color: ResQPetColors.white,
                           fontWeight: FontWeight.w800,

@@ -1,16 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:resqpet/controllers/annuncio_controller.dart';
+import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/widgets/annuncio_card.dart';
 
-class BachecaAnnunciScreen extends ConsumerWidget {
+class BachecaAnnunciScreen extends ConsumerStatefulWidget {
+  final TipoAnnuncio? tipoAnnuncio;
 
-  const BachecaAnnunciScreen({super.key});
+  const BachecaAnnunciScreen({
+    super.key,
+    this.tipoAnnuncio
+  });
+  
+  @override
+  ConsumerState<BachecaAnnunciScreen> createState() {
+    return _BachecaAnnunciScreenState();
+  }
+}
+
+class _BachecaAnnunciScreenState extends ConsumerState<BachecaAnnunciScreen> {
+
+  String _searchQuery = '';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     
-    final stato = ref.watch(annunciProvider());
+    final annunciAsyncValue = ref.watch(annunciProvider(
+      tipo: widget.tipoAnnuncio
+    ));
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -29,32 +46,44 @@ class BachecaAnnunciScreen extends ConsumerWidget {
                 fontWeight: FontWeight.w800
               ),
             ),
-            TextField(
-              enableSuggestions: true,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.filter_alt_outlined),
-                suffixIcon: Icon(Icons.search),
-                hintText: 'Cerca ...',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(30)
+            SearchAnchor(
+              builder: (context, controller) => SearchBar(
+                hintText: "Cerca Annuncio",
+                controller: controller,
+                leading: const Icon(Icons.search),
+                trailing: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    }, 
+                    icon: Icon(Icons.clear)
+                  )
+                ],
+                padding: const WidgetStatePropertyAll<EdgeInsets>(
+                  EdgeInsets.symmetric(horizontal: 16.0),
                 ),
-              ),
+                onChanged: (query) {
+                  setState(() {
+                    _searchQuery = query;
+                  });
+                },
+              ), 
+              suggestionsBuilder: (context, controller) => []
             ),
-            
-            stato.when(
+            annunciAsyncValue.when(
               loading: () => const Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 50),
                   child: CircularProgressIndicator(),
                 ),
               ),
-              
-              error: (error, stackTrace) => Center(
+              error: (error, _) => Center(
                 child: Text("Errore: $error"),
               ),
-              
               data: (annunci) {
+
                 if (annunci.isEmpty) {
                   return const Center(
                     child: Padding(
@@ -64,15 +93,26 @@ class BachecaAnnunciScreen extends ConsumerWidget {
                   );
                 }
                 
+                final filtered = annunci.where((annuncio){
+                  return annuncio.colorePelo.contains(_searchQuery) 
+                    || annuncio.nome.contains(_searchQuery)
+                    || annuncio.sesso.contains(_searchQuery)
+                    || annuncio.razza.contains(_searchQuery);
+                })
+                .toList();
+
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount: annunci.length,
+                  itemCount: filtered.length,
                   itemBuilder: (context, index) {
 
-                    final annuncio = annunci[index];
-                    return AnnuncioCard(annuncio: annuncio, onViewDetailsClick: () {
-                      //TODO visualizza dettagli
-                    });
+                    final annuncio = filtered[index];
+                    return AnnuncioCard(
+                      annuncio: annuncio, 
+                      onViewDetailsClick: () {
+                        //TODO visualizza dettagli
+                      }
+                    );
                   }
                 );
               }
@@ -82,5 +122,4 @@ class BachecaAnnunciScreen extends ConsumerWidget {
       ),
     );
   }
-  
 }

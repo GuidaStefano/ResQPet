@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/di/services.dart';
+import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/screens/admin_annunci_screen.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
 import 'package:resqpet/screens/admin_utenti_screen.dart';
+import 'package:resqpet/screens/bacheca_annunci_screen.dart';
 import 'package:resqpet/screens/crea_segnalazione_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
 import 'package:resqpet/screens/segnalazioni_map_screen.dart';
@@ -35,6 +37,7 @@ class Routes {
   static const adminUsers = Route(name: 'admin-users', path: '/admin/users');
   static const adminAnnunci = Route(name: 'admin-annunci', path: '/admin/annunci');
   static const creaSegnalazione = Route(name: 'crea-segnalazione', path: '/crea-segnalazione');
+  static const bacheca = Route(name: 'bacheca', path: '/bacheca');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -106,6 +109,16 @@ GoRouter router(Ref ref) {
         path: Routes.creaSegnalazione.path,
         name: Routes.creaSegnalazione.name,
         builder: (context, _) => const CreaSegnalazioneScreen()
+      ),
+      GoRoute(
+        path: Routes.bacheca.path, 
+        name: Routes.bacheca.name,
+        builder: (context, state) {
+          final TipoAnnuncio? tipo = state.extra as TipoAnnuncio?;
+          return BachecaAnnunciScreen(
+            tipoAnnuncio: tipo,
+          );
+        }
       )
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),
