@@ -6,6 +6,7 @@ import 'package:resqpet/di/services.dart';
 import 'package:resqpet/screens/admin_annunci_screen.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
 import 'package:resqpet/screens/admin_utenti_screen.dart';
+import 'package:resqpet/screens/crea_segnalazione_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
 import 'package:resqpet/screens/segnalazioni_map_screen.dart';
 import 'package:resqpet/screens/signin_screen.dart';
@@ -33,6 +34,7 @@ class Routes {
   static const adminReports = Route(name: 'admin-reports', path: '/admin/reports');
   static const adminUsers = Route(name: 'admin-users', path: '/admin/users');
   static const adminAnnunci = Route(name: 'admin-annunci', path: '/admin/annunci');
+  static const creaSegnalazione = Route(name: 'crea-segnalazione', path: '/crea-segnalazione');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -99,6 +101,11 @@ GoRouter router(Ref ref) {
         path: Routes.adminAnnunci.path,
         name: Routes.adminAnnunci.name,
         builder: (context, _) => const AdminAnnunciScreen()
+      ),
+      GoRoute(
+        path: Routes.creaSegnalazione.path,
+        name: Routes.creaSegnalazione.name,
+        builder: (context, _) => const CreaSegnalazioneScreen()
       )
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:resqpet/controllers/segnalazioni_controller.dart';
-import 'package:resqpet/core/utils/snackbar.dart';
+import 'package:resqpet/core/utils/constants.dart';
+import 'package:resqpet/core/utils/functions.dart';
 import 'package:resqpet/theme.dart';
 
 
@@ -23,7 +23,7 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
   static const double initialZoom = 6.0;
   static const double maxZoom = 16;
   static const double minZoom = 4;
-  static const LatLng italyCoordinates = LatLng(41.8719, 12.5674);
+  bool _isLoading = false;
 
   late final MapController _mapController;
   double _zoomLevel = initialZoom;
@@ -35,7 +35,7 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
     super.initState();
 
     _mapController = MapController();
-    _getCurrentLocation(context);
+    _centerMap(context);
   }
 
   @override
@@ -65,48 +65,17 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
     _mapController.move(_currentLatLng, _zoomLevel);
   }
 
-  Future<void> _getCurrentLocation(BuildContext context) async {
+  Future<void> _centerMap(BuildContext context) async {
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    
-    if(permission == LocationPermission.deniedForever) {
+    setState(() {
+      _isLoading = true;
+    });
 
-      if(!context.mounted) return;
-
-      ScaffoldMessenger.of(context)
-        .showSnackBar(
-          SnackBar(
-            content: const Text(
-              'I permessi di posizione sono negati permanentemente. Abilitali nelle impostazioni per centrare la mappa.'
-            ),
-            showCloseIcon: true,
-            duration: const Duration(seconds: 5),
-            action: SnackBarAction(
-              label: 'IMPOSTAZIONI',
-              onPressed: () {
-                Geolocator.openAppSettings();
-              },
-            ),
-          )
-        );
-    }
-    
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-      Position position = await Geolocator.getCurrentPosition();
-
-      setState(() {
-        _currentLatLng = LatLng(position.latitude, position.longitude);
-      });
-
-      _mapController.move(_currentLatLng, _zoomLevel);
-    } else {
-      if(!context.mounted) return;
-      showErrorSnackBar(context, "Permesso negato, impossibile centrare la mappa.");
-    }
+    final latlang = await getCurrentLocation(context);
+    setState(() {
+      _currentLatLng = latlang;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -163,6 +132,17 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
               ?? MarkerLayer(markers: [])
             ]
           ),
+          if(_isLoading) Align(
+            alignment: AlignmentGeometry.center,
+            child: Container(
+              decoration: BoxDecoration(
+                color: ResQPetColors.onBackground.withAlpha(150),
+                borderRadius: BorderRadius.circular(20)
+              ),
+              padding: EdgeInsets.all(20),
+              child: const CircularProgressIndicator(),
+            ),
+          ),
           Align(
             alignment: AlignmentGeometry.bottomRight,
             child: Padding(
@@ -183,7 +163,7 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
                   ),
                   FloatingActionButton(
                     backgroundColor: ResQPetColors.primaryDark,
-                    onPressed: () => _getCurrentLocation(context),
+                    onPressed: () => _centerMap(context),
                     child: Icon(Icons.my_location_rounded),
                   )
                 ],
