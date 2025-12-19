@@ -53,6 +53,7 @@ class _CreaSegnalazioneScreenState extends ConsumerState<CreaSegnalazioneScreen>
 
     if(selectedFile.isEmpty) {
       showErrorSnackBar(context, "Fornire almeno un'immagine!");
+      return;
     }
 
     final currentLocation = await getCurrentLocation(context);
