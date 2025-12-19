@@ -360,7 +360,9 @@ class HomeScreen extends ConsumerWidget {
 
           return switch(utente.tipo) {
             TipoUtente.cittadino => FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () {
+                context.pushNamed(Routes.creaSegnalazione.name);
+              },
               icon: Image.asset(
                 "assets/zampa_icon.png",
                 width: 40,

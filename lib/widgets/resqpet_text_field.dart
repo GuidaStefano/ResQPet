@@ -7,6 +7,8 @@ class ResQPetTextField extends StatelessWidget {
   final TextEditingController? controller;
   final Icon? prefixIcon;
   final String? Function(String? value)? validator;
+  final int maxLines;
+  final int? maxLength;
 
   const ResQPetTextField({
     super.key,
@@ -14,7 +16,9 @@ class ResQPetTextField extends StatelessWidget {
     this.textInputType = TextInputType.text,
     this.controller,
     this.validator,
-    this.prefixIcon
+    this.prefixIcon,
+    this.maxLength,
+    this.maxLines = 1
   });
 
   @override
@@ -23,6 +27,8 @@ class ResQPetTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: textInputType,
+      maxLines: 1,
+      maxLength: maxLength,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: prefixIcon,
