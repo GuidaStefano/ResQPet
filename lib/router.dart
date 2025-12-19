@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/di/services.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
+import 'package:resqpet/screens/admin_utenti_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
 import 'package:resqpet/screens/segnalazioni_map_screen.dart';
 import 'package:resqpet/screens/signin_screen.dart';
@@ -29,6 +30,7 @@ class Routes {
   static const signUp = Route(name: 'signup', path: '/signup');
   static const map = Route(name: 'map', path: '/map');
   static const adminReports = Route(name: 'admin-reports', path: '/admin/reports');
+  static const adminUsers = Route(name: 'admin-users', path: '/admin/users');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -85,6 +87,11 @@ GoRouter router(Ref ref) {
         path: Routes.adminReports.path,
         name: Routes.adminReports.name,
         builder: (context, _) => const AdminReportsScreen() 
+      ),
+      GoRoute(
+        path: Routes.adminUsers.path,
+        name: Routes.adminUsers.name,
+        builder: (context, _) => const AdminUtentiScreen() 
       )
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),
@@ -94,15 +101,15 @@ GoRouter router(Ref ref) {
       final isLoggingIn = state.matchedLocation == Routes.signIn.path
         || state.matchedLocation == Routes.signUp.path;
 
-        if (!isLoggedIn && !isLoggingIn) {
-          return Routes.signIn.path;
-        }
+      if (!isLoggedIn && !isLoggingIn) {
+        return Routes.signIn.path;
+      }
 
-        if (isLoggedIn && isLoggingIn) {
-          return Routes.home.path;
-        }
-        
-        return null;
+      if (isLoggedIn && isLoggingIn) {
+        return Routes.home.path;
+      }
+      
+      return null;
     }
   );
 }
