@@ -277,16 +277,19 @@ class HomeScreen extends ConsumerWidget {
         title: 'GESTIONE UTENTI',
         description: 'Visualizza e gestisci gli utenti',
         icon: Icons.people,
+        onTitleTap: () => context.pushNamed(Routes.adminUsers.name)
       ),
       HomeCard.icon(
         title: 'GESTIONE ANNUNCI',
         description: 'Adozioni e vendite',
-        icon: Icons.campaign
+        icon: Icons.campaign,
+         onTitleTap: () => context.pushNamed(Routes.adminAnnunci.name)
       ),
       HomeCard.icon(
         title: 'GESTIONE REPORT',
         description: 'Segnalazioni e moderazione',
         icon: Icons.report,
+        onTitleTap: () => context.pushNamed(Routes.adminReports.name),
       )
     ];
   }

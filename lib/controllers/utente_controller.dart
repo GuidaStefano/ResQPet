@@ -1,0 +1,47 @@
+import 'package:resqpet/di/repositories.dart';
+import 'package:resqpet/models/utente.dart';
+import 'package:resqpet/repositories/utente_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'utente_controller.g.dart';
+
+@riverpod
+Stream<List<Utente>> utenti(Ref ref) {
+  final utenteRepository = ref.read(utenteRepositoryProvider);
+  return utenteRepository.getAllExceptAdmin();
+}
+
+sealed class DeleteAccountState {
+  DeleteAccountState();
+
+  factory DeleteAccountState.idle() = DeleteAccountIdle;
+  factory DeleteAccountState.error(String message) = DeleteAccountError;
+}
+
+class DeleteAccountIdle extends DeleteAccountState {}
+class DeleteAccountError extends DeleteAccountState {
+  final String message;
+  DeleteAccountError(this.message);
+}
+
+@riverpod
+class DeleteAccountController extends _$DeleteAccountController {
+  
+
+  late final UtenteRepository _utenteRepository;
+
+  @override
+  DeleteAccountState build() {
+    _utenteRepository = ref.read(utenteRepositoryProvider);
+    return DeleteAccountState.idle();
+  }
+
+  Future<void> deleteAccount(Utente utente) async {
+    try {
+      await _utenteRepository.cancellaAccountById(utente.id);
+      state = DeleteAccountState.idle();
+    } catch(e) {
+      state = DeleteAccountState.error("Si e' verificato un problema con la rimozione dell'account");
+    }
+  }
+}

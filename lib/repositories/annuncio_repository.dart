@@ -14,6 +14,10 @@ class AnnuncioRepository {
     required this.annuncioDao
   });
 
+  Stream<List<Annuncio>> getAnnunciByStato(StatoAnnuncio stato) {
+    return annuncioDao.findByStatoStream(stato);
+  }
+
   Future<List<Annuncio>> getAnnunciVendita() async {
     return await annuncioDao.findActiveByTipo(TipoAnnuncio.vendita);
   }

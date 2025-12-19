@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/di/services.dart';
+import 'package:resqpet/screens/admin_annunci_screen.dart';
+import 'package:resqpet/screens/admin_reports_screen.dart';
+import 'package:resqpet/screens/admin_utenti_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
 import 'package:resqpet/screens/segnalazioni_map_screen.dart';
 import 'package:resqpet/screens/signin_screen.dart';
@@ -27,6 +30,9 @@ class Routes {
   static const signIn = Route(name: 'signin', path: '/signin');
   static const signUp = Route(name: 'signup', path: '/signup');
   static const map = Route(name: 'map', path: '/map');
+  static const adminReports = Route(name: 'admin-reports', path: '/admin/reports');
+  static const adminUsers = Route(name: 'admin-users', path: '/admin/users');
+  static const adminAnnunci = Route(name: 'admin-annunci', path: '/admin/annunci');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -61,7 +67,7 @@ GoRouter router(Ref ref) {
     routes: [
       GoRoute(
         name: Routes.home.name,
-        path: '/',
+        path: Routes.home.path,
         builder: (context, _) => const HomeScreen()
       ),
       GoRoute(
@@ -78,6 +84,21 @@ GoRouter router(Ref ref) {
         name: Routes.map.name,
         path: Routes.map.path,
         builder: (context, _) => const SegnalazioniMapScreen()
+      ),
+      GoRoute(
+        path: Routes.adminReports.path,
+        name: Routes.adminReports.name,
+        builder: (context, _) => const AdminReportsScreen() 
+      ),
+      GoRoute(
+        path: Routes.adminUsers.path,
+        name: Routes.adminUsers.name,
+        builder: (context, _) => const AdminUtentiScreen() 
+      ),
+      GoRoute(
+        path: Routes.adminAnnunci.path,
+        name: Routes.adminAnnunci.name,
+        builder: (context, _) => const AdminAnnunciScreen()
       )
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),
@@ -87,15 +108,15 @@ GoRouter router(Ref ref) {
       final isLoggingIn = state.matchedLocation == Routes.signIn.path
         || state.matchedLocation == Routes.signUp.path;
 
-        if (!isLoggedIn && !isLoggingIn) {
-          return Routes.signIn.path;
-        }
+      if (!isLoggedIn && !isLoggingIn) {
+        return Routes.signIn.path;
+      }
 
-        if (isLoggedIn && isLoggingIn) {
-          return Routes.home.path;
-        }
-        
-        return null;
+      if (isLoggedIn && isLoggingIn) {
+        return Routes.home.path;
+      }
+      
+      return null;
     }
   );
 }
