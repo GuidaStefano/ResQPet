@@ -282,7 +282,8 @@ class HomeScreen extends ConsumerWidget {
       HomeCard.icon(
         title: 'GESTIONE ANNUNCI',
         description: 'Adozioni e vendite',
-        icon: Icons.campaign
+        icon: Icons.campaign,
+         onTitleTap: () => context.pushNamed(Routes.adminAnnunci.name)
       ),
       HomeCard.icon(
         title: 'GESTIONE REPORT',

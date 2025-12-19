@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/di/services.dart';
+import 'package:resqpet/screens/admin_annunci_screen.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
 import 'package:resqpet/screens/admin_utenti_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
@@ -31,6 +32,7 @@ class Routes {
   static const map = Route(name: 'map', path: '/map');
   static const adminReports = Route(name: 'admin-reports', path: '/admin/reports');
   static const adminUsers = Route(name: 'admin-users', path: '/admin/users');
+  static const adminAnnunci = Route(name: 'admin-annunci', path: '/admin/annunci');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -92,6 +94,11 @@ GoRouter router(Ref ref) {
         path: Routes.adminUsers.path,
         name: Routes.adminUsers.name,
         builder: (context, _) => const AdminUtentiScreen() 
+      ),
+      GoRoute(
+        path: Routes.adminAnnunci.path,
+        name: Routes.adminAnnunci.name,
+        builder: (context, _) => const AdminAnnunciScreen()
       )
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),
