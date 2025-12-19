@@ -8,6 +8,15 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs location access to track your position.</string>
 
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to take photos.</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to select images.</string>
+
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs permission to save photos.</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

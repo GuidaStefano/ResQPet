@@ -1,3 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:resqpet/core/utils/constants.dart';
+import 'package:resqpet/core/utils/snackbar.dart';
+
 bool isJPEG(String path) {
   return path.toLowerCase().endsWith(".jpeg") ||
     path.toLowerCase().endsWith(".jpg");
@@ -14,4 +20,49 @@ bool isValidLatitude(double lat) {
 
 bool isValidLongitude(double lng) {
   return lng >= -180 && lng <= 180;
+}
+
+
+Future<LatLng> getCurrentLocation(BuildContext context) async {
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  
+  if(permission == LocationPermission.deniedForever) {
+
+    if(!context.mounted) {
+      return italyCoordinates;
+    }
+
+    ScaffoldMessenger.of(context)
+      .showSnackBar(
+        SnackBar(
+          content: const Text(
+            'I permessi di posizione sono negati permanentemente. Abilitali nelle impostazioni per centrare la mappa.'
+          ),
+          showCloseIcon: true,
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'IMPOSTAZIONI',
+            onPressed: () {
+              Geolocator.openAppSettings();
+            },
+          ),
+        )
+      );
+  }
+  
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    Position position = await Geolocator.getCurrentPosition();
+    return LatLng(position.latitude, position.longitude);
+  } else {
+    if(context.mounted) {
+      showErrorSnackBar(context, "Permesso negato, impossibile centrare la mappa.");
+    }
+  }
+
+  return italyCoordinates;
 }
