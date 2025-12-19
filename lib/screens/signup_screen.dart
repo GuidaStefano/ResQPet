@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/abbonamento_controller.dart';
@@ -423,12 +422,4 @@ class ChooseSubscriptionScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-@Preview(name: "SignUp Screen", size: Size(400, 800))
-Widget signUpPreview() {
-  return MaterialApp(
-    theme: resqpetTheme,
-    home: const SignUpScreen(),
-  );
 }
