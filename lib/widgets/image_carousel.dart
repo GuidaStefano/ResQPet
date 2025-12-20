@@ -4,14 +4,14 @@ class ImageCarousel extends StatefulWidget {
 
   final bool isSourceNetwork;
   final List<String> images;
-  final double imageHeight;
+  final double height;
   final double? imageWidth;
 
   const ImageCarousel({
     super.key,
     required this.images,
     required this.isSourceNetwork,
-    this.imageHeight = 200,
+    this.height = 250,
     this.imageWidth
   });
   
@@ -38,31 +38,47 @@ class _ImageCarouselState extends State<ImageCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      itemCount: widget.images.length,
-      pageSnapping: true,
-      controller: _pageController,
-      itemBuilder: (context, pagePosition) {
+    return SizedBox(
+      height: widget.height, 
+      child: PageView.builder(
+        itemCount: widget.images.length,
+        pageSnapping: true,
+        controller: _pageController,
+        itemBuilder: (context, pagePosition) {
 
-        final image = widget.images[pagePosition];
+          final image = widget.images[pagePosition];
 
-        return Container(
-          margin: EdgeInsets.all(10),
-          child: widget.isSourceNetwork
-            ? Image.network(
-              image,
-              fit: BoxFit.cover,
-              height: widget.imageHeight,
-              width: widget.imageWidth,
-            )
-            : Image.asset(
-              image,
-              fit: BoxFit.cover,
-              height: widget.imageHeight,
-              width: widget.imageWidth,
-            )
-        );
-      }
+          return Container(
+            margin: EdgeInsets.all(10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: widget.isSourceNetwork
+                ? Image.network(
+                  image,
+                  fit: BoxFit.cover,
+                  width: widget.imageWidth,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey[300],
+                    child: const Center(
+                      child: Text('Immagine non disponibile')
+                    ),
+                  )
+                ) 
+                : Image.asset(
+                  image,
+                  width: widget.imageWidth,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey[300],
+                    child: const Center(
+                      child: Text('Immagine non disponibile')
+                    ),
+                  ),
+                ),
+            ) 
+          );
+        }
+      )
     );
   }
 }

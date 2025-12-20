@@ -9,7 +9,7 @@ import 'package:resqpet/widgets/image_carousel.dart';
 
 class AnnuncioCard extends ConsumerWidget {
   final Annuncio annuncio;
-  final void Function()? onViewDetailsClick;
+  final void Function(Utente, Annuncio)? onViewDetailsClick;
 
   const AnnuncioCard({
     required this.annuncio,
@@ -87,27 +87,29 @@ class AnnuncioCard extends ConsumerWidget {
                 ),
                 Text(annuncio.razza),
                 SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  spacing: 10,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ResQPetColors.accent,
-                      ),
-                      onPressed: () {
-                        onViewDetailsClick?.call();
-                      },
-                      child: Text(
-                        "Vedi Dettagli",
-                        style: TextStyle(
-                          color: ResQPetColors.white,
-                          fontWeight: FontWeight.w800,
+                datiUtenteAsyncValue.whenOrNull(
+                  data: (utente) => Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    spacing: 10,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ResQPetColors.accent,
+                        ),
+                        onPressed: () {
+                          onViewDetailsClick?.call(utente, annuncio);
+                        },
+                        child: Text(
+                          "Vedi Dettagli",
+                          style: TextStyle(
+                            color: ResQPetColors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ) ?? SizedBox()
               ],
             ),
           ),
