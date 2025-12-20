@@ -13,12 +13,16 @@ class UtenteRepository {
 
   UtenteRepository(this._authService, this._utenteDao);
 
-  Future<Utente?> getUtenteInfo() async {
+  Future<Utente?> getLoggedUtenteInfo() async {
     final currentUser = _authService.currentUser;
     if (currentUser == null) {
       return null;
     }
-    return _utenteDao.findById(currentUser.uid);
+    return getUtenteInfoById(currentUser.uid);
+  }
+
+  Future<Utente?> getUtenteInfoById(String id) async {
+    return _utenteDao.findById(id);
   }
 
   Future<Utente> aggiornaProfiloInfo(Utente utente) async {

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/abbonamento_controller.dart';
 import 'package:resqpet/controllers/dati_utente_controller.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
+import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
@@ -153,7 +154,13 @@ class HomeScreen extends ConsumerWidget {
           "assets/card1.jpg",
           height: 120,
           fit: BoxFit.cover
-        )
+        ),
+        onTitleTap: () {
+          context.pushNamed(
+            Routes.bacheca.name,
+            extra: TipoAnnuncio.adozione
+          );
+        }
       ),
       HomeCard.image(
         title: "AQUISTA", 
@@ -162,7 +169,13 @@ class HomeScreen extends ConsumerWidget {
           "assets/card2.jpg",
           height: 120,
           fit: BoxFit.cover
-        )
+        ),
+        onTitleTap: () {
+          context.pushNamed(
+            Routes.bacheca.name,
+            extra: TipoAnnuncio.vendita
+          );
+        },
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -290,6 +303,11 @@ class HomeScreen extends ConsumerWidget {
         description: 'Segnalazioni e moderazione',
         icon: Icons.report,
         onTitleTap: () => context.pushNamed(Routes.adminReports.name),
+      ),
+      HomeCard.icon(
+        title: 'REGISTRA ENTE',
+        description: 'Registra un nuovo ente',
+        icon: Icons.group_add_outlined,
       )
     ];
   }
@@ -414,30 +432,7 @@ class HomeScreen extends ConsumerWidget {
             _ => null
           };
         }
-      ),
-      bottomNavigationBar: datiUtente.whenOrNull(
-        data: (utente) {
-
-          if(utente.tipo != TipoUtente.cittadino) {
-            return null;
-          }
-
-          return NavigationBar(
-            destinations: [
-              NavigationDestination(
-                selectedIcon: Icon(Icons.home_filled),
-                icon: Icon(Icons.home_outlined),
-                label: "Home"
-              ),
-              NavigationDestination(
-                selectedIcon: Icon(Icons.store),
-                icon: Icon(Icons.store_outlined),
-                label: "Bacheca"
-              )
-            ],
-          );
-        }
-      ),
+      )
     );
   }
   
