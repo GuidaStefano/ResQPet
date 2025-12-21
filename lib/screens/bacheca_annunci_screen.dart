@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/annuncio_controller.dart';
 import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/widgets/annuncio_card.dart';
 
 class BachecaAnnunciScreen extends ConsumerStatefulWidget {
@@ -39,12 +41,20 @@ class _BachecaAnnunciScreenState extends ConsumerState<BachecaAnnunciScreen> {
           spacing: 10,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Annunci",
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.w800
-              ),
+            Row(
+              children: [
+                if(context.canPop()) IconButton(
+                  onPressed: () => context.pop(), 
+                  icon: Icon(Icons.arrow_back)
+                ), 
+                Text(
+                  "Annunci",
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w800
+                  ),
+                )
+              ]
             ),
             SearchAnchor(
               builder: (context, controller) => SearchBar(
@@ -109,8 +119,14 @@ class _BachecaAnnunciScreenState extends ConsumerState<BachecaAnnunciScreen> {
                     final annuncio = filtered[index];
                     return AnnuncioCard(
                       annuncio: annuncio, 
-                      onViewDetailsClick: () {
-                        //TODO visualizza dettagli
+                      onViewDetailsClick: (utente, annuncio) {
+                        context.pushNamed(
+                          Routes.dettagliAnnuncio.name,
+                          extra:  {
+                            'annuncio': annuncio,
+                            'creatore': utente
+                          }
+                        );
                       }
                     );
                   }
