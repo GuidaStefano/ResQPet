@@ -41,12 +41,20 @@ class _BachecaAnnunciScreenState extends ConsumerState<BachecaAnnunciScreen> {
           spacing: 10,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Annunci",
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.w800
-              ),
+            Row(
+              children: [
+                if(context.canPop()) IconButton(
+                  onPressed: () => context.pop(), 
+                  icon: Icon(Icons.arrow_back)
+                ), 
+                Text(
+                  "Annunci",
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w800
+                  ),
+                )
+              ]
             ),
             SearchAnchor(
               builder: (context, controller) => SearchBar(

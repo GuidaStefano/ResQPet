@@ -109,7 +109,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         fontWeight: FontWeight.w700,
                         color: ResQPetColors.accent
                       ),
-                      text: "Registati",
+                      text: "Registrati",
                       recognizer: TapGestureRecognizer()
                         ..onTap = () => context.pushNamed(Routes.signUp.name)
                     )

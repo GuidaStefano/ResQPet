@@ -103,7 +103,7 @@ class SignUpController extends _$SignUpController {
         default:
           state = SignUpState.error("Errore account non valido.");
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseAuthException catch (e) {
       state = SignUpState.error(e.message ?? "Si e' verificato un errore durante la registrazione!");
     } on Exception catch (_) {
       state = SignUpState.error("Si e' verificato un errore durante la registrazione!");
