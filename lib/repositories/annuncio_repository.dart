@@ -110,7 +110,7 @@ class AnnuncioRepository {
 
     if(annuncio is AnnuncioVendita) {
 
-      if (dataRegex.hasMatch(annuncio.dataNascita)) {
+      if (!dataRegex.hasMatch(annuncio.dataNascita)) {
         throw ArgumentError.value(
           annuncio.dataNascita, 
           'dataNascita', 
