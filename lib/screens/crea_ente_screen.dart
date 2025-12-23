@@ -144,6 +144,7 @@ class _CreaEnteScreenState extends ConsumerState<CreaEnteScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 20),
               ResQPetTextField(
                 controller: _partitaIVAController,
                 textInputType: TextInputType.text,

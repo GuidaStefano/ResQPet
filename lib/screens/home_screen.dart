@@ -308,6 +308,7 @@ class HomeScreen extends ConsumerWidget {
         title: 'REGISTRA ENTE',
         description: 'Registra un nuovo ente',
         icon: Icons.group_add_outlined,
+        onTitleTap: () => context.pushNamed(Routes.adminRegistraEnte.name),
       )
     ];
   }
