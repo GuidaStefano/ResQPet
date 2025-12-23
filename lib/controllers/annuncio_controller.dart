@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:resqpet/di/repositories.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
 import 'package:resqpet/models/annuncio/stato_annuncio.dart';
@@ -60,13 +62,72 @@ class AnnuncioController extends _$AnnuncioController {
     }
   }
 
-  Future<void> creaAnnuncio(Annuncio annuncio) async {
+  Future<void> creaAnnuncio({
+    required TipoAnnuncio tipo,
+    required String nome,
+    required String sesso,
+    required double peso,
+    required String colorePelo,
+    required bool isSterilizzato,
+    required String specie,
+    required String razza,
+    required List<File> foto,
+    required StatoAnnuncio statoAnnuncio,
+
+    // Annuncio Vendita
+    double? prezzo,
+    String? dataNascita,
+    String? numeroMicrochip,
+
+    // Annuncio Adozione
+    String? storia,
+    String? noteSanitarie,
+    double? contributoSpeseSanitarie,
+    String? carattere,
+  }) async {
     try {
       state = AnnuncioState.loading();
-      await _annuncioRepository.creaAnnuncio(annuncio);
+
+      if(tipo == TipoAnnuncio.adozione) {
+        await _annuncioRepository.creaAnnuncioAdozione(
+          nome: nome, 
+          sesso: sesso, 
+          peso: peso, 
+          colorePelo: colorePelo, 
+          isSterilizzato: isSterilizzato, 
+          specie: specie, 
+          razza: razza, 
+          foto: foto, 
+          statoAnnuncio: statoAnnuncio, 
+          storia: storia!, 
+          noteSanitarie: noteSanitarie!, 
+          contributoSpeseSanitarie: contributoSpeseSanitarie!, 
+          carattere: carattere!
+        );
+      } else {
+        await _annuncioRepository.creaAnnuncioVendita(
+          nome: nome, 
+          sesso: sesso, 
+          peso: peso, 
+          colorePelo: colorePelo, 
+          isSterilizzato: isSterilizzato, 
+          specie: specie, 
+          razza: razza, 
+          foto: foto, 
+          statoAnnuncio: statoAnnuncio, 
+          prezzo: prezzo!,
+          dataNascita: dataNascita!,
+          numeroMicrochip: numeroMicrochip!
+        );
+      }
+      
       state = AnnuncioState.success();
-    } catch(e) {
-      state = AnnuncioState.error("Si e' verificato un problema con la creazione dell'annuncio");
+    } on StateError catch(e) {
+      state = AnnuncioState.error(e.message);
+    } on ArgumentError catch(e) {
+      state = AnnuncioState.error(e.message);
+    } catch (_) {
+      state = AnnuncioState.error("Impossibile creare l'annuncio");
     }
   }
 

@@ -69,5 +69,12 @@ AuthRepository authRepository(Ref ref) {
 @riverpod
 AnnuncioRepository annuncioRepository(Ref ref) {
   final annuncioDao = ref.read(annuncioDaoProvider);
-  return AnnuncioRepository(annuncioDao: annuncioDao);
+  final authService = ref.read(authServiceProvider);
+  final storageService = ref.read(cloudStorageServiceProvider);
+  
+  return AnnuncioRepository(
+    annuncioDao: annuncioDao,
+    authService: authService,
+    storageService: storageService
+  );
 }
