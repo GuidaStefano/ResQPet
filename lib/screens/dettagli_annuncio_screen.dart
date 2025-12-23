@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:resqpet/controllers/image_controller.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
 import 'package:resqpet/models/annuncio/annuncio_adozione.dart';
@@ -10,7 +12,7 @@ import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/image_carousel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DettagliAnnuncioScreen extends StatelessWidget {
+class DettagliAnnuncioScreen extends ConsumerWidget {
 
   final Annuncio annuncio;
   final Utente creatore;
@@ -22,7 +24,10 @@ class DettagliAnnuncioScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final imagesAsyncValue = ref.watch(getImagesFromCloudProvider(annuncio.foto));
+
     return Scaffold(
       backgroundColor: ResQPetColors.surface,
       appBar: AppBar(
@@ -51,8 +56,13 @@ class DettagliAnnuncioScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Immagine principale o carosello di immagini
-            _buildImageGallery(annuncio.foto),
+
+            imagesAsyncValue.whenOrNull(
+              data: (urls) => _buildImageGallery(urls),
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              )
+            ) ?? _buildImageGallery(annuncio.foto),
             const SizedBox(height: 16),
 
             // Nome dell'animale

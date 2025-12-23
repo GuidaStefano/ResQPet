@@ -371,11 +371,7 @@ class HomeScreen extends ConsumerWidget {
       ),
       floatingActionButton: datiUtente.whenOrNull(
         data: (utente) {
-
-          if(utente.tipo != TipoUtente.cittadino) {
-            return null;
-          }
-
+          
           return switch(utente.tipo) {
             TipoUtente.cittadino => FloatingActionButton.extended(
               onPressed: () {
@@ -389,7 +385,14 @@ class HomeScreen extends ConsumerWidget {
               label: const Text("Segnala")
             ),
             TipoUtente.ente => FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () {
+                context.pushNamed(
+                  Routes.creaAnnuncio.name,
+                  pathParameters: {
+                    'tipo': TipoAnnuncio.adozione.toFirestore()
+                  }
+                );
+              },
               icon: Icon(Icons.add, color: Colors.white),
               label: const Text("Crea Annuncio")
             ),
@@ -418,7 +421,14 @@ class HomeScreen extends ConsumerWidget {
                     return;
                   }
 
-                  // TODO: crea annuncio
+                  if(!context.mounted) return;
+
+                  context.pushNamed(
+                    Routes.creaAnnuncio.name,
+                    pathParameters: {
+                      'tipo': TipoAnnuncio.vendita.toFirestore()
+                    }
+                  );
 
                 } catch(_) {
                   if(context.mounted) {

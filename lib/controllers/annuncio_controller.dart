@@ -88,7 +88,7 @@ class AnnuncioController extends _$AnnuncioController {
     try {
       state = AnnuncioState.loading();
 
-      if(tipo == TipoAnnuncio.vendita) {
+      if(tipo == TipoAnnuncio.adozione) {
         await _annuncioRepository.creaAnnuncioAdozione(
           nome: nome, 
           sesso: sesso, 
@@ -122,8 +122,12 @@ class AnnuncioController extends _$AnnuncioController {
       }
       
       state = AnnuncioState.success();
-    } catch(e) {
-      state = AnnuncioState.error("Si e' verificato un problema con la creazione dell'annuncio");
+    } on StateError catch(e) {
+      state = AnnuncioState.error(e.message);
+    } on ArgumentError catch(e) {
+      state = AnnuncioState.error(e.message);
+    } catch (_) {
+      state = AnnuncioState.error("Impossibile creare l'annuncio");
     }
   }
 

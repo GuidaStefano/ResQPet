@@ -9,6 +9,7 @@ import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/screens/admin_annunci_screen.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
 import 'package:resqpet/screens/admin_utenti_screen.dart';
+import 'package:resqpet/screens/annuncio_form_screen.dart';
 import 'package:resqpet/screens/bacheca_annunci_screen.dart';
 import 'package:resqpet/screens/crea_segnalazione_screen.dart';
 import 'package:resqpet/screens/dettagli_annuncio_screen.dart';
@@ -42,6 +43,9 @@ class Routes {
   static const creaSegnalazione = Route(name: 'crea-segnalazione', path: '/crea-segnalazione');
   static const bacheca = Route(name: 'bacheca', path: '/bacheca');
   static const dettagliAnnuncio = Route(name: 'annuncio', path: '/annuncio');
+
+  static const creaAnnuncio = Route(name: 'crea-annuncio', path: '/crea-annuncio/:tipo');
+  static const aggiornaAnnuncio = Route(name: 'aggiorna-annuncio', path: '/aggiorna-annuncio/:tipo');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -134,7 +138,27 @@ GoRouter router(Ref ref) {
             creatore: data['creatore'] as Utente
           );
         }
-      )
+      ),
+      GoRoute(
+        path: Routes.creaAnnuncio.path, 
+        name: Routes.creaAnnuncio.name,
+        builder: (context, state) {
+          final tipo = TipoAnnuncio.fromString(state.pathParameters['tipo']!);
+          return AnnuncioFormScreen(tipoAnnuncio: tipo);
+        }
+      ),
+      GoRoute(
+        path: Routes.aggiornaAnnuncio.path, 
+        name: Routes.aggiornaAnnuncio.name,
+        builder: (context, state) {
+          final tipo = TipoAnnuncio.fromString(state.pathParameters['tipo']!);
+          final annuncio = state.extra as Annuncio;
+          return AnnuncioFormScreen(
+            tipoAnnuncio: tipo,
+            annuncio: annuncio
+          );
+        }
+      ),
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),
     redirect: (context, state) {

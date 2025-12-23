@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/annuncio_controller.dart';
 import 'package:resqpet/core/utils/functions.dart';
 import 'package:resqpet/core/utils/regex.dart';
@@ -15,11 +16,11 @@ import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/photo_upload_card.dart';
 import 'package:resqpet/widgets/resqpet_text_field.dart';
 
-class AnnuncioFormPage extends ConsumerStatefulWidget {
+class AnnuncioFormScreen extends ConsumerStatefulWidget {
   final TipoAnnuncio tipoAnnuncio;
   final Annuncio? annuncio;
 
-  const AnnuncioFormPage({
+  const AnnuncioFormScreen({
     super.key, 
     this.annuncio,
     required this.tipoAnnuncio
@@ -28,10 +29,10 @@ class AnnuncioFormPage extends ConsumerStatefulWidget {
   bool get isEdit => annuncio != null;
 
   @override
-  ConsumerState<AnnuncioFormPage> createState() => _AnnuncioFormPageState();
+  ConsumerState<AnnuncioFormScreen> createState() => _AnnuncioFormPageState();
 }
 
-class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
+class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Campi comuni
@@ -136,6 +137,11 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
     ref.listen(annuncioControllerProvider, (_, state) {
       if(state is AnnuncioError) {
         showErrorSnackBar(context, state.message);
+      }
+
+      if(state is AnnuncioSuccess) {
+        showSnackBar(context, "Annuncio Creato!");
+        context.pop();
       }
     });
 
