@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:resqpet/controllers/annuncio_controller.dart';
 import 'package:resqpet/core/utils/functions.dart';
 import 'package:resqpet/core/utils/regex.dart';
+import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
 import 'package:resqpet/models/annuncio/annuncio_adozione.dart';
 import 'package:resqpet/models/annuncio/annuncio_vendita.dart';
 import 'package:resqpet/models/annuncio/stato_annuncio.dart';
 import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/theme.dart';
+import 'package:resqpet/widgets/photo_upload_card.dart';
 import 'package:resqpet/widgets/resqpet_text_field.dart';
 
 class AnnuncioFormPage extends ConsumerStatefulWidget {
@@ -29,8 +34,6 @@ class AnnuncioFormPage extends ConsumerStatefulWidget {
 class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
   final _formKey = GlobalKey<FormState>();
 
-  late TipoAnnuncio _tipo;
-
   // Campi comuni
   final _nomeCtrl = TextEditingController();
   final _sessoCtrl = TextEditingController();
@@ -39,6 +42,9 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
   final _specieCtrl = TextEditingController();
   final _razzaCtrl = TextEditingController();
   bool _sterilizzato = false;
+  late bool _salvaComeBozza = false;
+
+  final List<File> _foto = [];
 
   // Adozione
   final _storiaCtrl = TextEditingController();
@@ -60,7 +66,8 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
     }
 
     final a = widget.annuncio!;
-    _tipo = a.tipo;
+
+    _salvaComeBozza = a.statoAnnuncio == StatoAnnuncio.inAttesa;
 
     _nomeCtrl.text = a.nome;
     _sessoCtrl.text = a.sesso;
@@ -106,8 +113,34 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
     _microchipCtrl.dispose();
   }
 
+  Future<void> takePicture(BuildContext context, [bool fromCamera = false]) async {
+    try {
+      final image = await pickImage(context, fromCamera: fromCamera);
+      setState(() {
+        _foto.add(File(image.path));
+      });
+
+      if(context.mounted) {
+        showSnackBar(context, "Immaggine selezionata!");
+      }
+    } catch(_) {
+      if(context.mounted) {
+        showErrorSnackBar(context, "Errore nell'acquisizione della foto");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    ref.listen(annuncioControllerProvider, (_, state) {
+      if(state is AnnuncioError) {
+        showErrorSnackBar(context, state.message);
+      }
+    });
+
+    final state = ref.watch(annuncioControllerProvider);
+
     return Scaffold(
       backgroundColor: ResQPetColors.surface,
       appBar: AppBar(
@@ -131,6 +164,52 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: ResQPetColors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: ResQPetColors.primaryDark.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.raw_on,
+                      color: ResQPetColors.primaryDark,
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Text(
+                        'Salvare come bozza?',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: ResQPetColors.primaryDark,
+                        ),
+                      ),
+                    ),
+                    Switch(
+                      value: _salvaComeBozza,
+                      onChanged: (v) => setState(() => _salvaComeBozza = v),
+                      activeThumbColor: ResQPetColors.accent,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              if(!widget.isEdit) PhotoUploadCard(
+                onPickImageFromCamera: () async {
+                  await takePicture(context, true);
+                }, 
+                onPickImageFromGallery: () async {
+                  await takePicture(context);
+                },
+                selectedImages: _foto
+              ),
+              const SizedBox(height: 20),
               // Sezione Informazioni Animale
               const Text(
                 'Informazioni Animale',
@@ -244,7 +323,7 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
               const Divider(height: 32),
 
               // Sezione Specifica
-              if (_tipo == TipoAnnuncio.adozione) ...[
+              if (widget.tipoAnnuncio == TipoAnnuncio.adozione) ...[
                 const Text(
                   'Dettagli Adozione',
                   style: TextStyle(
@@ -256,7 +335,7 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
                 const SizedBox(height: 16),
                 ..._adozioneFields(),
               ],
-              if (_tipo == TipoAnnuncio.vendita) ...[
+              if (widget.tipoAnnuncio == TipoAnnuncio.vendita) ...[
                 const Text(
                   'Dettagli Vendita',
                   style: TextStyle(
@@ -275,7 +354,7 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton.icon(
+                child: state is! AnnuncioLoading ? ElevatedButton.icon(
                   onPressed: _submit,
                   icon: Icon(widget.isEdit ? Icons.save : Icons.send),
                   label: Text(
@@ -293,6 +372,8 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
                     ),
                     elevation: 4,
                   ),
+                ) : const Center(
+                  child: CircularProgressIndicator(),
                 ),
               ),
               const SizedBox(height: 20),
@@ -407,47 +488,93 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormPage> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
 
+    final controller = ref.read(annuncioControllerProvider.notifier);
+
+    final nome = _nomeCtrl.text;
+    final sesso = _sessoCtrl.text;
+    final peso = double.tryParse(_pesoCtrl.text.trim()) ?? 0.0;
+    final colorePelo = _coloreCtrl.text;
+    final isSterilizzato = _sterilizzato;
+    final specie = _specieCtrl.text;
+    final razza = _razzaCtrl.text;
+    final statoAnnuncio = _salvaComeBozza ? StatoAnnuncio.inAttesa : StatoAnnuncio.attivo;
+
+    final prezzo = double.tryParse(_prezzoCtrl.text) ?? 0;
+    final dataNascita =  _dataNascitaCtrl.text;
+    final numeroMicrochip = _microchipCtrl.text;
+
+    final storia = _storiaCtrl.text;
+    final noteSanitarie = _noteSanitarieCtrl.text;
+    final contributoSpeseSanitarie = double.tryParse(_contributoCtrl.text.trim()) ?? 0.0;
+    final carattere = _carattereCtrl.text;
+
+    if(!widget.isEdit) {
+      
+      controller.creaAnnuncio(
+        tipo: widget.tipoAnnuncio, 
+        nome: nome, 
+        sesso: sesso, 
+        peso: peso, 
+        colorePelo: colorePelo,
+        isSterilizzato: isSterilizzato, 
+        specie: specie, 
+        razza: razza, 
+        foto: _foto, 
+        statoAnnuncio: statoAnnuncio,
+
+        // Adozione
+        storia: storia,
+        noteSanitarie: noteSanitarie,
+        contributoSpeseSanitarie: contributoSpeseSanitarie,
+        carattere: carattere,
+
+        // Vendita
+        prezzo: prezzo,
+        dataNascita: dataNascita,
+        numeroMicrochip: numeroMicrochip
+      );
+
+      return;
+    }
+
     Annuncio annuncio;
 
-    if (_tipo == TipoAnnuncio.adozione) {
-      annuncio = AnnuncioAdozione(
-        id: widget.annuncio?.id ?? '',
-        creatoreRef: widget.annuncio?.creatoreRef ?? '',
-        nome: _nomeCtrl.text,
-        sesso: _sessoCtrl.text,
-        peso: double.tryParse(_pesoCtrl.text.trim()) ?? 0.0,
-        colorePelo: _coloreCtrl.text,
-        isSterilizzato: _sterilizzato,
-        specie: _specieCtrl.text,
-        razza: _razzaCtrl.text,
-        foto: widget.annuncio?.foto ?? [],
-        statoAnnuncio: widget.annuncio?.statoAnnuncio ?? StatoAnnuncio.attivo,
+    if(widget.annuncio is AnnuncioVendita) {
+
+      final vendita = widget.annuncio as AnnuncioVendita;
+
+      annuncio = vendita.copyWith(
+        nome: nome,
+        sesso: sesso,
+        peso: peso,
+        colorePelo: colorePelo,
+        isSterilizzato: isSterilizzato,
+        specie: specie,
+        razza: razza,
+        statoAnnuncio: statoAnnuncio,
+        prezzo: double.tryParse(_prezzoCtrl.text) ?? 0,
+        dataNascita: _dataNascitaCtrl.text,
+        numeroMicrochip: _microchipCtrl.text
+      );
+    } else {
+      final adozione = widget.annuncio as AnnuncioAdozione;
+
+      annuncio = adozione.copyWith(
+        nome: nome,
+        sesso: sesso,
+        peso: peso,
+        colorePelo: colorePelo,
+        isSterilizzato: isSterilizzato,
+        specie: specie,
+        razza: razza,
+        statoAnnuncio: statoAnnuncio,
         storia: _storiaCtrl.text,
         noteSanitarie: _noteSanitarieCtrl.text,
         contributoSpeseSanitarie: double.tryParse(_contributoCtrl.text.trim()) ?? 0.0,
         carattere: _carattereCtrl.text,
       );
-    } else {
-      annuncio = AnnuncioVendita(
-        id: widget.annuncio?.id ?? '',
-        creatoreRef: widget.annuncio?.creatoreRef ?? '',
-        nome: _nomeCtrl.text,
-        sesso: _sessoCtrl.text,
-        peso: double.tryParse(_pesoCtrl.text.trim()) ?? 0.0,
-        colorePelo: _coloreCtrl.text,
-        isSterilizzato: _sterilizzato,
-        specie: _specieCtrl.text,
-        razza: _razzaCtrl.text,
-        foto: widget.annuncio?.foto ?? [],
-        statoAnnuncio: widget.annuncio?.statoAnnuncio ?? StatoAnnuncio.attivo,
-        prezzo: double.tryParse(_prezzoCtrl.text) ?? 0,
-        dataNascita: _dataNascitaCtrl.text,
-        numeroMicrochip: _microchipCtrl.text,
-      );
     }
 
-    /*
-    context.pop(context, annuncio);
-    */
+    controller.aggiornaAnnuncio(annuncio);
   }
 }

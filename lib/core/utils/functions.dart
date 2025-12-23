@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:resqpet/core/utils/constants.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
@@ -65,4 +66,18 @@ Future<LatLng> getCurrentLocation(BuildContext context) async {
   }
 
   return italyCoordinates;
+}
+
+Future<XFile> pickImage(BuildContext context, { bool fromCamera = false}) async {
+  final ImagePicker picker = ImagePicker();
+
+  final XFile? image = await picker.pickImage(
+    source: fromCamera ? ImageSource.camera : ImageSource.gallery
+  );
+
+  if(image == null) {
+    throw StateError("Impossibile caricare l'immagine");
+  }
+
+  return image;
 }

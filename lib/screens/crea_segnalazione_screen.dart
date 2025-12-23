@@ -67,30 +67,25 @@ class _CreaSegnalazioneScreenState extends ConsumerState<CreaSegnalazioneScreen>
       );
   }
 
-  Future<void> pickImage(BuildContext context, { bool fromCamera = false}) async {
-    final ImagePicker picker = ImagePicker();
+  Future<void> selectImage(BuildContext context, { bool fromCamera = false}) async {
 
-    final XFile? image = await picker.pickImage(
-      source: fromCamera ? ImageSource.camera : ImageSource.gallery
-    );
+    try {
+      final file = await pickImage(context, fromCamera: fromCamera);
 
-    if(image == null) {
+      setState(() {
+        selectedFile.add(file);
+      });
 
+      if(context.mounted) {
+        showSnackBar(context, "Immaggine caricata.");
+      }
+    } on StateError catch(e) {
       if(context.mounted) {
         showErrorSnackBar(
           context,
-          "Impossibile caricare l'immagine"
+          e.message
         );
       }
-      return;
-    }
-
-    setState(() {
-      selectedFile.add(image);
-    });
-
-    if(context.mounted) {
-      showSnackBar(context, "Immaggine caricata.");
     }
   }
 
@@ -177,7 +172,7 @@ class _CreaSegnalazioneScreenState extends ConsumerState<CreaSegnalazioneScreen>
                                     onPressed: () async {
 
                                       try {
-                                        await pickImage(context, fromCamera: true);
+                                        await selectImage(context, fromCamera: true);
                                       } catch(_) {
                                         if(context.mounted) {
                                           showErrorSnackBar(
@@ -205,7 +200,7 @@ class _CreaSegnalazioneScreenState extends ConsumerState<CreaSegnalazioneScreen>
                                       ),
                                       onPressed: () async {
                                         try {
-                                          await pickImage(context);
+                                          await selectImage(context);
                                         } catch(_) {
                                           if(context.mounted) {
                                             showErrorSnackBar(
