@@ -109,4 +109,18 @@ class SegnalazioneController extends _$SegnalazioneController {
       state = SegnalazioneState.error("Errore durante la rinuncia delle segnalazione.");
     }
   }
+
+  Future<void> prendiInCarico(String segnalazioneId) async {
+    try {
+      state = SegnalazioneState.loading();
+      await _segnalazioneRepository.prendiInCaricoSegnalazione(segnalazioneId);
+      state = SegnalazioneState.success();
+    } on ArgumentError catch(e) {
+      state = SegnalazioneState.error(e.message);
+    } on StateError catch(e) {
+      state = SegnalazioneState.error(e.message);
+    } catch(_) {
+      state = SegnalazioneState.error("Errore durante la presa in carico delle segnalazione.");
+    }
+  }
 }

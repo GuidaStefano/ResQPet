@@ -8,14 +8,12 @@ import 'package:resqpet/widgets/image_carousel.dart';
 class SegnalazioneCard extends ConsumerWidget {
 
   final Segnalazione segnalazione;
-  final String actionTitle;
-  final void Function(Segnalazione)? onActionClick;
+  final List<Widget>? actions;
 
   const SegnalazioneCard({
     super.key,
     required this.segnalazione,
-    required this.actionTitle,
-    this.onActionClick
+    this.actions
   });
 
   @override
@@ -85,33 +83,14 @@ class SegnalazioneCard extends ConsumerWidget {
                       const SizedBox(height: 16),
 
                       // Pulsanti
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () {
-                                onActionClick?.call(segnalazione);
-                              },
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(
-                                  color: ResQPetColors.primaryDark,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                              child: Text(
-                                actionTitle,
-                                style: TextStyle(
-                                  color: ResQPetColors.primaryDark,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      if(actions != null) SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          spacing: 5,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: actions ?? []
+                        ),
+                      )
                     ],
                   ),
                 )

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:resqpet/di/services.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
 import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
+import 'package:resqpet/models/segnalazione.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/screens/admin_annunci_screen.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
@@ -14,6 +15,7 @@ import 'package:resqpet/screens/bacheca_annunci_screen.dart';
 import 'package:resqpet/screens/crea_ente_screen.dart';
 import 'package:resqpet/screens/crea_segnalazione_screen.dart';
 import 'package:resqpet/screens/dettagli_annuncio_screen.dart';
+import 'package:resqpet/screens/dettagli_segnalazione_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
 import 'package:resqpet/screens/segnalazioni_in_carico_screen.dart';
 import 'package:resqpet/screens/segnalazioni_map_screen.dart';
@@ -47,6 +49,7 @@ class Routes {
   static const bacheca = Route(name: 'bacheca', path: '/bacheca');
   static const dettagliAnnuncio = Route(name: 'annuncio', path: '/annuncio');
   static const segnalazioniInCarico = Route(name: 'in-carico', path: '/segnalazioni/inCarico');
+  static const segnalazione = Route(name: 'segnalazione', path: '/segnalazione');
   static const creaAnnuncio = Route(name: 'crea-annuncio', path: '/crea-annuncio/:tipo');
   static const aggiornaAnnuncio = Route(name: 'aggiorna-annuncio', path: '/aggiorna-annuncio/:tipo');
 }
@@ -100,6 +103,14 @@ GoRouter router(Ref ref) {
         name: Routes.map.name,
         path: Routes.map.path,
         builder: (context, _) => const SegnalazioniMapScreen()
+      ),
+      GoRoute(
+        path: Routes.segnalazione.path,
+        name: Routes.segnalazione.name,
+        builder: (context, state) {
+          final s = state.extra as Segnalazione?;
+          return DettagliSegnalazioneScreen(segnalazione: s!);
+        }
       ),
       GoRoute(
         path: Routes.segnalazioniInCarico.path,

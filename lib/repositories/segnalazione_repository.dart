@@ -190,7 +190,7 @@ class SegnalazioneRepository {
 
     await dao.update(
       segnalazione.copyWith(
-        soccorritoreRef: null,
+        resetSoccorritoreRef: true,
         stato: StatoSegnalazione.inAttesa
       )
     );

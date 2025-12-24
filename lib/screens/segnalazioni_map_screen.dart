@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:resqpet/controllers/segnalazioni_controller.dart';
 import 'package:resqpet/core/utils/constants.dart';
 import 'package:resqpet/core/utils/functions.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 
 
@@ -113,7 +115,10 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
                       ), 
                       child: IconButton(
                         onPressed: () {
-                          // TODO: vai alla schermata dei dettagli della segnalazione
+                          context.pushNamed(
+                            Routes.segnalazione.name, 
+                            extra: segnalazione
+                          );
                         },
                         icon: Icon(
                           Icons.pets_outlined,

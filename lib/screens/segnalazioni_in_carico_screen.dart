@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/segnalazioni_controller.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/info_message.dart';
 import 'package:resqpet/widgets/segnalazione_card.dart';
@@ -72,35 +73,82 @@ class SegnalazioniInCaricoScreen extends ConsumerWidget {
                     final segnalazione = segnalazioni[index];
                     return SegnalazioneCard(
                       segnalazione: segnalazione,
-                      actionTitle: 'Abbandona Incarico',
-                      onActionClick: (segnalazione) {
-                        // show the dialog
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Rununciare alla segnalazione?"),
-                              content: Text("Sicuro di voler rinunciare a questa segnalazione?"),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => context.pop(), 
-                                  child: const Text("No")
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    await ref.read(segnalazioneControllerProvider.notifier)
-                                      .abbandonaIncarico(segnalazione.id);
-                                    
-                                    if(!context.mounted) return;
-                                    context.pop();
-                                  },
-                                  child: const Text("Si")
-                                )
-                              ],
-                            );
-                          },
-                        );
-                      },
+                      actions: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.pushNamed(
+                                Routes.segnalazione.name, 
+                                extra: segnalazione
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                color: ResQPetColors.primaryDark,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: Text(
+                              "Dettagli",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Rununciare alla segnalazione?"),
+                                    content: Text("Sicuro di voler rinunciare a questa segnalazione?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => context.pop(), 
+                                        child: const Text("No")
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          await ref.read(segnalazioneControllerProvider.notifier)
+                                            .abbandonaIncarico(segnalazione.id);
+                                          
+                                          if(!context.mounted) return;
+                                          context.pop();
+                                        },
+                                        child: const Text("Si")
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                color: ResQPetColors.primaryDark,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: Text(
+                              "Abbandona Incarico",
+                              style: TextStyle(
+                                color: ResQPetColors.primaryDark,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        )
+                      ]
                     );
                   },
                 );
