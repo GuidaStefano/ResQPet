@@ -11,6 +11,7 @@ import 'package:resqpet/screens/admin_reports_screen.dart';
 import 'package:resqpet/screens/admin_utenti_screen.dart';
 import 'package:resqpet/screens/annuncio_form_screen.dart';
 import 'package:resqpet/screens/bacheca_annunci_screen.dart';
+import 'package:resqpet/screens/crea_ente_screen.dart';
 import 'package:resqpet/screens/crea_segnalazione_screen.dart';
 import 'package:resqpet/screens/dettagli_annuncio_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
@@ -40,6 +41,7 @@ class Routes {
   static const adminReports = Route(name: 'admin-reports', path: '/admin/reports');
   static const adminUsers = Route(name: 'admin-users', path: '/admin/users');
   static const adminAnnunci = Route(name: 'admin-annunci', path: '/admin/annunci');
+  static const adminRegistraEnte = Route(name: 'admin-registra-ente', path: '/admin/new-ente');
   static const creaSegnalazione = Route(name: 'crea-segnalazione', path: '/crea-segnalazione');
   static const bacheca = Route(name: 'bacheca', path: '/bacheca');
   static const dettagliAnnuncio = Route(name: 'annuncio', path: '/annuncio');
@@ -112,6 +114,11 @@ GoRouter router(Ref ref) {
         path: Routes.adminAnnunci.path,
         name: Routes.adminAnnunci.name,
         builder: (context, _) => const AdminAnnunciScreen()
+      ),
+      GoRoute(
+        path: Routes.adminRegistraEnte.path,
+        name: Routes.adminRegistraEnte.name,
+        builder: (context, _) => const CreaEnteScreen()
       ),
       GoRoute(
         path: Routes.creaSegnalazione.path,

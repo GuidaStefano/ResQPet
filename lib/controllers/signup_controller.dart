@@ -100,6 +100,23 @@ class SignUpController extends _$SignUpController {
           };
           return;
         }
+        case TipoUtente.ente: {
+
+          final String partitaIVA = dati['partitaIVA'] as String;
+          final String sedeLegale = dati['sedeLegale'] as String;
+
+          await _utenteRepository.registraEnte(
+            email: email, 
+            password: password, 
+            nominativo: nominativo, 
+            numeroTelefono: numeroTelefono,
+            partitaIVA: partitaIVA,
+            sedeLegale: sedeLegale
+          );
+
+          state = SignUpState.success();
+          return;
+        }
         default:
           state = SignUpState.error("Errore account non valido.");
       }
