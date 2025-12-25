@@ -270,7 +270,8 @@ class HomeScreen extends ConsumerWidget {
       HomeCard.icon(
         title: 'VISUALIZZA SEGNALAZIONI',
         description: 'Visualizza le tue segnalazioni attualmete in carico',
-        icon: Icons.campaign
+        icon: Icons.campaign,
+        onTitleTap: () => context.pushNamed(Routes.segnalazioniInCarico.name),
       )
     ];
   }

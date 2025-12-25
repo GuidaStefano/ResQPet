@@ -190,7 +190,7 @@ class SegnalazioneRepository {
 
     await dao.update(
       segnalazione.copyWith(
-        soccorritoreRef: null,
+        resetSoccorritoreRef: true,
         stato: StatoSegnalazione.inAttesa
       )
     );
@@ -200,7 +200,7 @@ class SegnalazioneRepository {
     return dao.findByStatoStream(StatoSegnalazione.inAttesa);
   }
 
-  Future<List<Segnalazione>> getSegnalazioniCreateByCittadino() async {
+  Stream<List<Segnalazione>> getSegnalazioniCreateByCittadino() {
 
     final uid = authService.currentUser?.uid;
 
@@ -208,12 +208,15 @@ class SegnalazioneRepository {
       throw StateError("Il cittadino deve essere autenticato.");
     }
 
-    return (await dao.findByCittadino(uid))
-      .where((s) => s.stato == StatoSegnalazione.inAttesa)
-      .toList();
+    return  dao.findByCittadino(uid)
+      .map(
+        (segnalazioni) => 
+          segnalazioni.where((s) => s.stato == StatoSegnalazione.inAttesa)
+            .toList()
+      );
   }
 
-  Future<List<Segnalazione>> getIncarichiSoccorritore() async {
+  Stream<List<Segnalazione>> getIncarichiSoccorritore() {
 
     final uid = authService.currentUser?.uid;
 
@@ -221,7 +224,7 @@ class SegnalazioneRepository {
       throw StateError("Il soccorritore deve essere autenticato.");
     }
 
-    return await dao.findBySoccorritore(uid);
+    return dao.findBySoccorritore(uid);
   }
 
   Future<Segnalazione> risolviSegnalazione(String segnalazioneId) async {
