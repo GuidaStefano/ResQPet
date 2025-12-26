@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:resqpet/controllers/dati_utente_controller.dart';
 import 'package:resqpet/di/repositories.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/repositories/auth_repository.dart';
@@ -53,12 +54,16 @@ sealed class UpdateAccountState {
   UpdateAccountState();
 
   factory UpdateAccountState.idle() = UpdateAccountIdle;
+  factory UpdateAccountState.passwordSuccess() = UpdateAccountPasswordSuccess;
+  factory UpdateAccountState.emailSuccess() = UpdateAccountEmailSuccess;
   factory UpdateAccountState.success() = UpdateAccountSuccess;
   factory UpdateAccountState.loading() = UpdateAccountLoading;
   factory UpdateAccountState.error(String message) = UpdateAccountError;
 }
 
 class UpdateAccountIdle extends UpdateAccountState {}
+class UpdateAccountPasswordSuccess extends UpdateAccountState {}
+class UpdateAccountEmailSuccess extends UpdateAccountState {}
 class UpdateAccountSuccess extends UpdateAccountState {}
 class UpdateAccountLoading extends UpdateAccountState {}
 class UpdateAccountError extends UpdateAccountState {
@@ -85,12 +90,14 @@ class UpdateAccountController extends _$UpdateAccountController {
     required String newPassword
   }) async {
     try {
-      state = UpdateAccountState.idle();
+      state = UpdateAccountState.loading();
       
       await _authRepository.reauthenticate(email, currentPassword);
       await _authRepository.updatePassword(newPassword);
       
-      state = UpdateAccountState.success();
+      state = UpdateAccountState.passwordSuccess();
+
+      ref.invalidate(datiUtenteProvider);
     } on FirebaseAuthException catch (e) {
       state = UpdateAccountState.error(e.message ?? "Errore durante l'aggiornamento della password");
     }
@@ -101,7 +108,7 @@ class UpdateAccountController extends _$UpdateAccountController {
     required String newEmail
   }) async {
     try {
-      state = UpdateAccountState.idle();
+      state = UpdateAccountState.loading();
 
       await _authRepository.updateEmail(newEmail);
       await _utenteRepository.aggiornaProfiloInfo(
@@ -110,7 +117,8 @@ class UpdateAccountController extends _$UpdateAccountController {
         )
       );
       
-      state = UpdateAccountState.success();
+      state = UpdateAccountState.emailSuccess();
+      ref.invalidate(datiUtenteProvider);
     } on FirebaseAuthException catch (e) {
       state = UpdateAccountState.error(e.message ?? "Errore durante l'aggiornamento dell'email");
     }
@@ -118,9 +126,10 @@ class UpdateAccountController extends _$UpdateAccountController {
 
   Future<void> update(Utente utente) async {
     try {
-      state = UpdateAccountState.idle();
+      state = UpdateAccountState.loading();
       _utenteRepository.aggiornaProfiloInfo(utente);
       state = UpdateAccountState.success();
+      ref.invalidate(datiUtenteProvider);
     } on FirebaseAuthException catch (e) {
       state = UpdateAccountState.error(e.message ?? "Errore durante l'aggiornamento dei dati del profilo");
     }
