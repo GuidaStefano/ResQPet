@@ -178,8 +178,6 @@ class UtenteRepository {
     }
 
     await _utenteDao.deleteById(id);
-    await currentUser.delete();
-
     final callable = FirebaseFunctions.instance
       .httpsCallable("deleteUserAccountByUID");
 
