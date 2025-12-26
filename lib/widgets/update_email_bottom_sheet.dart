@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/utente_controller.dart';
 import 'package:resqpet/core/utils/regex.dart';
-import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/resqpet_button.dart';
@@ -64,15 +63,6 @@ class _UpdateEmailBottomSheetState extends ConsumerState<UpdateEmailBottomSheet>
   Widget build(BuildContext context) {
 
     ref.listen(updateAccountControllerProvider, (_, state) {
-
-      if(state is UpdateAccountError) {
-        showErrorSnackBar(context, state.message);
-      }
-
-      if(state is UpdateAccountSuccess) {
-        showSnackBar(context, "Email Aggiornata!");
-      }
-
       context.pop();
     });
 
@@ -107,7 +97,7 @@ class _UpdateEmailBottomSheetState extends ConsumerState<UpdateEmailBottomSheet>
               const SizedBox(height: 20),
 
               ResQPetTextField(
-                label: 'Email Attuale',
+                label: 'Nuova Email',
                 controller: _emailController,
                 validator: (value) => !emailRegex.hasMatch(value ?? '')
                   ? "Email non valida"

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/utente_controller.dart';
 import 'package:resqpet/core/utils/regex.dart';
-import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/password_text_filed.dart';
 import 'package:resqpet/widgets/resqpet_button.dart';
@@ -65,15 +64,6 @@ class _UpdateBottomPasswordSheetState extends ConsumerState<UpdateBottomPassword
   Widget build(BuildContext context) {
 
     ref.listen(updateAccountControllerProvider, (_, state) {
-
-      if(state is UpdateAccountError) {
-        showErrorSnackBar(context, state.message);
-      }
-
-      if(state is UpdateAccountSuccess) {
-        showSnackBar(context, "Password Aggiornata!");
-      }
-
       context.pop();
     });
 
@@ -90,9 +80,9 @@ class _UpdateBottomPasswordSheetState extends ConsumerState<UpdateBottomPassword
         child: Form(
           key: _formKey,
           child: Column(
+            spacing: 20,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Drag handle
               Container(
                 width: 40,
                 height: 4,
@@ -130,7 +120,7 @@ class _UpdateBottomPasswordSheetState extends ConsumerState<UpdateBottomPassword
                     return 'Campo richiesto.';
                   }
 
-                  if(value != _currentController.text) {
+                  if(value != _newController.text) {
                     return "Le password non corrispondono.";
                   }
 
