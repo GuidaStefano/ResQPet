@@ -98,14 +98,11 @@ class UpdateAccountController extends _$UpdateAccountController {
 
   Future<void> updateEmail({
     required Utente utente,
-    required String currentPassword,
     required String newEmail
   }) async {
     try {
       state = UpdateAccountState.idle();
-      
-      await _authRepository.reauthenticate(utente.email, currentPassword);
-      
+
       await _authRepository.updateEmail(newEmail);
       await _utenteRepository.aggiornaProfiloInfo(
         utente.copyWith(
