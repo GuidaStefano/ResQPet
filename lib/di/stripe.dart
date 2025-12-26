@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'stripe.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stripe stripe(Ref ref) {
   return Stripe.instance;
 }
