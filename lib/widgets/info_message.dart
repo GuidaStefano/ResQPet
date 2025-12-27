@@ -30,6 +30,7 @@ class InfoMessage extends StatelessWidget {
           const SizedBox(height: 20),
           Text(
             message,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
