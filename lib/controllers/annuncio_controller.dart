@@ -21,17 +21,33 @@ Stream<List<Annuncio>> annunci(Ref ref, {
     : annuncioRepository.getAnnunciByStatoAndTipoStream(stato, tipo);
 }
 
+@riverpod
+Stream<List<Annuncio>> annunciPubblicati(Ref ref) {
+  final annuncioRepository = ref.read(annuncioRepositoryProvider);
+  final authRepository = ref.read(authRepositoryProvider);
+
+  return annuncioRepository
+    .getAnnunciByCreatoreStream(authRepository.getCurrentUser()!.uid);
+}
+
+
 sealed class AnnuncioState {
   const AnnuncioState();
 
   factory AnnuncioState.idle() = AnnuncioIdle;
   factory AnnuncioState.loading() = AnnuncioLoading;
+  factory AnnuncioState.finalizzato() = AnnuncioFinalizzatoSuccess;
+  factory AnnuncioState.modificato() = AnnuncioModificatoSuccess;
+  factory AnnuncioState.rimosso() = AnnuncioRimossoSuccess;
   factory AnnuncioState.success() = AnnuncioSuccess;
   factory AnnuncioState.error(String message) = AnnuncioError;
 }
 
 final class AnnuncioIdle extends AnnuncioState {}
 final class AnnuncioLoading extends AnnuncioState {}
+final class AnnuncioFinalizzatoSuccess extends AnnuncioState {}
+final class AnnuncioModificatoSuccess extends AnnuncioState {}
+final class AnnuncioRimossoSuccess extends AnnuncioState {}
 final class AnnuncioSuccess extends AnnuncioState {}
 
 final class AnnuncioError extends AnnuncioState {
@@ -55,7 +71,7 @@ class AnnuncioController extends _$AnnuncioController {
       state = AnnuncioState.loading();
       final isSuccess = await _annuncioRepository.cancellaAnnuncio(annuncio.id);
       state = isSuccess 
-        ? AnnuncioState.success()
+        ? AnnuncioState.rimosso()
         : AnnuncioState.error("Si e' verificato un problema con la rimozione dell'annuncio");
     } catch(e) {
       state = AnnuncioState.error("Si e' verificato un problema con la rimozione dell'annuncio");
@@ -135,7 +151,7 @@ class AnnuncioController extends _$AnnuncioController {
     try {
       state = AnnuncioState.loading();
       await _annuncioRepository.finalizzaAnnuncio(annuncio.id);
-      state = AnnuncioState.success();
+      state = AnnuncioState.finalizzato();
     } catch(e) {
       state = AnnuncioState.error("Si e' verificato un problema con la finalizzazione dell'annuncio");
     }
@@ -145,7 +161,7 @@ class AnnuncioController extends _$AnnuncioController {
     try {
       state = AnnuncioState.loading();
       await _annuncioRepository.aggiornaAnnuncio(annuncio);
-      state = AnnuncioState.success();
+      state = AnnuncioState.modificato();
     } catch(e) {
       state = AnnuncioState.error("Si e' verificato un problema con l'aggiornamento dell'annuncio");
     }
