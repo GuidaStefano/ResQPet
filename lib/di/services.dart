@@ -7,19 +7,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'services.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 AuthService authService(Ref ref) {
   final firebaseAuth = ref.read(firebaseAuthProvider);
   return AuthService(firebaseAuth);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 CloudStorageService cloudStorageService(Ref ref) {
   final firebaseStorage = ref.read(firebaseStorageProvider);
   return CloudStorageService(firebaseStorage);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 StripeService stripeService(Ref ref) {
   final stripe = ref.read(stripeProvider);
   return StripeService(stripe);

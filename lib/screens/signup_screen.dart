@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:resqpet/controllers/abbonamento_controller.dart';
 import 'package:resqpet/controllers/signup_controller.dart';
 import 'package:resqpet/core/utils/regex.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
@@ -9,6 +8,7 @@ import 'package:resqpet/core/utils/theme.dart';
 import 'package:resqpet/models/abbonamento.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/router.dart';
+import 'package:resqpet/screens/scegli_abbonamento_screen.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/password_text_filed.dart';
 import 'package:resqpet/widgets/resqpet_text_field.dart';
@@ -135,7 +135,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (selectedAccount == TipoUtente.venditore) {
       steps.add(_sellerSpecificInfo());
       steps.add(
-        ChooseSubscriptionScreen(
+        ScegliAbbonamentoScreen(
           onTap: _handleSubscriptionSelection,
         )
       );
@@ -361,64 +361,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ChooseSubscriptionScreen extends ConsumerWidget {
-
-  final void Function(Abbonamento, int) onTap;
-
-  const ChooseSubscriptionScreen({super.key, required this.onTap});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-
-    final theme = themeOf(context);
-
-    final abbonamentiAsyncValue = ref.watch(abbonamentiProvider);
-
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Scegli l'Abbonamento:", 
-            style: theme.textTheme.titleLarge
-          ),
-          const Divider(height: 12),
-          Expanded(
-            child: abbonamentiAsyncValue.when(
-              data: (abbonamenti) {
-                return ListView.builder(
-                  itemCount: abbonamenti.length,
-                  itemBuilder: (context, index){
-                    final abbonamento = abbonamenti[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: ListTile(
-                        title: Text(abbonamento.descrizione, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Prezzo: ${abbonamento.prezzo}"),
-                        trailing: const Icon(Icons.arrow_forward),
-                        onTap: () => onTap(abbonamento, index),
-                      ),
-                    );
-                  }
-                );
-              }, 
-              error: (error, _) {
-                return Center(
-                  child: Text('Errore nel caricamento: ${error.toString()}')
-                );
-              }, 
-              loading: () => const Center(
-                child: CircularProgressIndicator()
-              )
-            )
-          ),
-        ]
       ),
     );
   }

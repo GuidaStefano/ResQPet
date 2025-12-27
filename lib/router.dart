@@ -10,6 +10,7 @@ import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/screens/admin_annunci_screen.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
 import 'package:resqpet/screens/admin_utenti_screen.dart';
+import 'package:resqpet/screens/aggiorna_abbonamento_screen.dart';
 import 'package:resqpet/screens/annuncio_form_screen.dart';
 import 'package:resqpet/screens/bacheca_annunci_screen.dart';
 import 'package:resqpet/screens/crea_ente_screen.dart';
@@ -17,6 +18,7 @@ import 'package:resqpet/screens/crea_segnalazione_screen.dart';
 import 'package:resqpet/screens/dettagli_annuncio_screen.dart';
 import 'package:resqpet/screens/dettagli_segnalazione_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
+import 'package:resqpet/screens/profilo_screen.dart';
 import 'package:resqpet/screens/segnalazioni_in_carico_screen.dart';
 import 'package:resqpet/screens/segnalazioni_map_screen.dart';
 import 'package:resqpet/screens/signin_screen.dart';
@@ -52,6 +54,8 @@ class Routes {
   static const segnalazione = Route(name: 'segnalazione', path: '/segnalazione');
   static const creaAnnuncio = Route(name: 'crea-annuncio', path: '/crea-annuncio/:tipo');
   static const aggiornaAnnuncio = Route(name: 'aggiorna-annuncio', path: '/aggiorna-annuncio/:tipo');
+  static const aggiornaAbbonamento = Route(name: 'aggiorna-abbonamento', path: '/aggiorna-abbonamento');
+  static const profilo = Route(name: 'profilo', path: '/profilo');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -182,6 +186,16 @@ GoRouter router(Ref ref) {
             annuncio: annuncio
           );
         }
+      ),
+      GoRoute(
+        path: Routes.aggiornaAbbonamento.path, 
+        name: Routes.aggiornaAbbonamento.name,
+        builder: (context, state) => AggiornaAbbonamentoScreen()
+      ),
+      GoRoute(
+        path: Routes.profilo.path, 
+        name: Routes.profilo.name,
+        builder: (context, state) => ProfiloScreen()
       ),
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),

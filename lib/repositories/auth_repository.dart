@@ -22,6 +22,10 @@ class AuthRepository {
     return _authService.updateEmail(newEmail);
   }
 
+  Future<UserCredential> reauthenticate(String email, String password) async {
+    return _authService.reauthenticate(email, password);
+  }
+
   User? getCurrentUser() {
     return _authService.currentUser;
   }

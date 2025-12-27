@@ -6,6 +6,10 @@ void _showSnackBar(BuildContext context, String message, {bool error = false}){
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       padding: const EdgeInsets.all(10),
       elevation: 2,
       showCloseIcon: true,

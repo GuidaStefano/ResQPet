@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -19,6 +20,15 @@ class AuthService {
     );
   }
 
+  Future<UserCredential> reauthenticate(String email, String password) async {
+    return currentUser!.reauthenticateWithCredential(
+      EmailAuthProvider.credential(
+        email: email,
+        password: password
+      )
+    );
+  }
+
   Future<void> signOut() async {
     return _auth.signOut();
   }
@@ -28,7 +38,14 @@ class AuthService {
   }
 
   Future<void> updateEmail(String email) async {
-    return currentUser?.verifyBeforeUpdateEmail(email);
+
+    final callable = FirebaseFunctions.instance
+      .httpsCallable("updateUserEmailByUID");
+
+    await callable.call({ 
+      'uid': currentUser!.uid,
+      'newEmail': email
+    });
   }
 
   Stream<User?> getAuthChanges() {

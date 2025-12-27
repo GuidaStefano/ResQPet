@@ -89,7 +89,7 @@ class SignUpController extends _$SignUpController {
             abbonamentoRef: abbonamentoRef
           );
 
-          await _stripeRepository.creaSessioneCheckout(prezzoAbbonamento.toString());
+          await _stripeRepository.creaSessioneCheckout(prezzoAbbonamento);
           final status = await _stripeRepository.effettuaPagamento();
 
           state = switch(status) {

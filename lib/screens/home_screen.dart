@@ -342,7 +342,7 @@ class HomeScreen extends ConsumerWidget {
                       navbar(
                         showProfileButton: TipoUtente.admin != utente.tipo,
                         onProfileClick: () {
-                          // TODO: navigate to profile screen
+                          context.pushNamed(Routes.profilo.name);
                         }
                       ),
                       ...switch(utente.tipo) {
@@ -413,7 +413,8 @@ class HomeScreen extends ConsumerWidget {
                     return;
                   }
 
-                  final canPublish = await ref.read(canPublishMoreAdProvider.future);
+                  final canPublish = await ref.read(abbonamentoControllerProvider.notifier)
+                    .canPublishMoreAd();
 
                   if(!canPublish) {
                     if(context.mounted) {
@@ -432,7 +433,7 @@ class HomeScreen extends ConsumerWidget {
                     }
                   );
 
-                } catch(_) {
+                } catch(e) {
                   if(context.mounted) {
                     showErrorSnackBar(context, "Impossibile creare un nuovo annuncio.");
                   }
