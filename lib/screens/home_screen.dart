@@ -212,11 +212,17 @@ class HomeScreen extends ConsumerWidget {
         title: 'VISUALIZZA ANNUNCI',
         description: 'Visualizza i tuoi annunci pubblicati',
         icon: Icons.newspaper_outlined,
+        onTitleTap: () => context.pushNamed(
+          Routes.annunciPubblicati.name
+        ),
       ),
       HomeCard.icon(
         title: 'VISUALIZZA ANNUNCI IN BOZZA',
         description: 'Visualizza le bozze dei tuoi annunci',
-        icon: Icons.raw_on_outlined
+        icon: Icons.raw_on_outlined,
+        onTitleTap: () => context.pushNamed(
+          Routes.annunciBozze.name
+        ),
       )
     ];
   }
@@ -236,11 +242,17 @@ class HomeScreen extends ConsumerWidget {
         title: 'VISUALIZZA ANNUNCI',
         description: 'Visualizza i tuoi annunci pubblicati',
         icon: Icons.newspaper_outlined,
+        onTitleTap: () => context.pushNamed(
+          Routes.annunciPubblicati.name
+        ),
       ),
       HomeCard.icon(
         title: 'VISUALIZZA ANNUNCI IN BOZZA',
         description: 'Visualizza le bozze dei tuoi annunci',
-        icon: Icons.raw_on_outlined
+        icon: Icons.raw_on_outlined,
+        onTitleTap: () => context.pushNamed(
+          Routes.annunciBozze.name
+        ),
       ),
       HomeCard.icon(
         title: 'VISUALIZZA DASHBOARD VENDITE',

@@ -7,6 +7,7 @@ import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/annuncio_card.dart';
 import 'package:resqpet/widgets/info_message.dart';
+import 'package:resqpet/widgets/resqpet_button.dart';
 
 class BachecaAnnunciScreen extends ConsumerStatefulWidget {
   final TipoAnnuncio? tipoAnnuncio;
@@ -114,11 +115,13 @@ class _BachecaAnnunciScreenState extends ConsumerState<BachecaAnnunciScreen> {
                   ),
                   data: (annunci) {
 
-                    final filtered = annunci.where((annuncio){
-                      return annuncio.colorePelo.contains(_searchQuery) 
-                        || annuncio.nome.contains(_searchQuery)
-                        || annuncio.sesso.contains(_searchQuery)
-                        || annuncio.razza.contains(_searchQuery);
+                    final query = _searchQuery.trim().toLowerCase();
+
+                    final filtered = annunci.where((annuncio) {
+                      return annuncio.colorePelo.toLowerCase().contains(query) 
+                        || annuncio.nome.toLowerCase().contains(query)
+                        || annuncio.sesso.toLowerCase().contains(query)
+                        || annuncio.razza.toLowerCase().contains(query);
                     })
                     .toList();
 
@@ -139,15 +142,26 @@ class _BachecaAnnunciScreenState extends ConsumerState<BachecaAnnunciScreen> {
                         final annuncio = filtered[index];
                         return AnnuncioCard(
                           annuncio: annuncio, 
-                          onViewDetailsClick: (utente, annuncio) {
-                            context.pushNamed(
-                              Routes.dettagliAnnuncio.name,
-                              extra:  {
-                                'annuncio': annuncio,
-                                'creatore': utente
-                              }
-                            );
-                          }
+                          actions: (annuncio, utente) {
+
+                            return [
+                              SizedBox(
+                                width: double.infinity,
+                                child: ResQPetButton(
+                                  text: "Dettagli",
+                                  onPressed: () {
+                                    context.pushNamed(
+                                      Routes.dettagliAnnuncio.name,
+                                      extra:  {
+                                        'annuncio': annuncio,
+                                        'creatore': utente
+                                      }
+                                    );
+                                  },
+                                ),
+                              )
+                            ];
+                          },
                         );
                       }
                     );

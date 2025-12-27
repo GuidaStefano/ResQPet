@@ -143,6 +143,11 @@ class _AnnuncioFormPageState extends ConsumerState<AnnuncioFormScreen> {
         showSnackBar(context, "Annuncio Creato!");
         context.pop();
       }
+
+      if(state is AnnuncioModificatoSuccess) {
+        showSnackBar(context, "Annuncio Aggiornato!");
+        context.pop();
+      }
     });
 
     final state = ref.watch(annuncioControllerProvider);

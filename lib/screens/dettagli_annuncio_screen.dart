@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:resqpet/controllers/annuncio_controller.dart';
 import 'package:resqpet/controllers/image_controller.dart';
+import 'package:resqpet/controllers/utente_controller.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/models/annuncio/annuncio.dart';
 import 'package:resqpet/models/annuncio/annuncio_adozione.dart';
@@ -8,6 +11,7 @@ import 'package:resqpet/models/annuncio/annuncio_vendita.dart';
 import 'package:resqpet/models/annuncio/stato_annuncio.dart';
 import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/models/utente.dart';
+import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/image_carousel.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,6 +31,18 @@ class DettagliAnnuncioScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final imagesAsyncValue = ref.watch(getImagesFromCloudProvider(annuncio.foto));
+    final currentUID = ref.read(currentUserIdProvider);
+
+    ref.listen(annuncioControllerProvider, (_, state) {
+      if(state is AnnuncioError) {
+        showErrorSnackBar(context, state.message);
+      }
+
+      if(state is AnnuncioFinalizzatoSuccess) {
+        showSnackBar(context, "Annuncio Finalizzato!");
+        context.pop();
+      }
+    });
 
     return Scaffold(
       backgroundColor: ResQPetColors.surface,
@@ -45,10 +61,24 @@ class DettagliAnnuncioScreen extends ConsumerWidget {
               : ResQPetColors.accent,
         ),
         actions: [
-          IconButton(
+          if(currentUID != annuncio.creatoreRef) IconButton(
             onPressed: () {}, 
             icon: Icon(Icons.report)
-          )
+          ),
+          if(currentUID == annuncio.creatoreRef 
+            && annuncio.statoAnnuncio != StatoAnnuncio.concluso) 
+            IconButton(
+              onPressed: () {
+                context.pushNamed(
+                  Routes.aggiornaAnnuncio.name,
+                  pathParameters: {
+                    'tipo': annuncio.tipo.toFirestore()
+                  },
+                  extra: annuncio,
+                );
+              }, 
+              icon: Icon(Icons.edit)
+            )
         ],
       ),
       body: SingleChildScrollView(
@@ -129,32 +159,54 @@ class DettagliAnnuncioScreen extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          
-          final telephoneUri = Uri(
-            scheme: 'tel',
-            path: creatore.numeroTelefono
-          );
+      floatingActionButton: (currentUID != annuncio.creatoreRef) 
+        ? FloatingActionButton.extended(
+            onPressed: () async {
+              
+              final telephoneUri = Uri(
+                scheme: 'tel',
+                path: creatore.numeroTelefono
+              );
 
-          if(await canLaunchUrl(telephoneUri)) {
-            await launchUrl(telephoneUri);
-            return;
-          } 
-            
-          if(!context.mounted) return;
-          showErrorSnackBar(context, "Si e' verificato un errore.");
-        },
-        backgroundColor: ResQPetColors.accent,
-        icon: const Icon(Icons.phone, color: ResQPetColors.white),
-        label: const Text(
-          'Contatta',
-          style: TextStyle(
-            color: ResQPetColors.white,
-            fontWeight: FontWeight.bold,
+              if(await canLaunchUrl(telephoneUri)) {
+                await launchUrl(telephoneUri);
+                return;
+              } 
+                
+              if(!context.mounted) return;
+              showErrorSnackBar(context, "Si e' verificato un errore.");
+            },
+            backgroundColor: ResQPetColors.accent,
+            icon: const Icon(Icons.phone, color: ResQPetColors.white),
+            label: const Text(
+              'Contatta',
+              style: TextStyle(
+                color: ResQPetColors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          )
+        : FloatingActionButton.extended(
+            onPressed: (annuncio.statoAnnuncio != StatoAnnuncio.concluso) 
+              ? () async {
+                ref.read(annuncioControllerProvider.notifier)
+                  .finalizzaAnnuncio(annuncio);
+              } 
+              : null,
+            backgroundColor: (annuncio.statoAnnuncio != StatoAnnuncio.concluso) 
+              ? const Color(0xFF4CAF50)
+              : Color(0xFFFF5722),
+            icon: const Icon(Icons.check, color: ResQPetColors.white),
+            label: Text(
+              (annuncio.statoAnnuncio != StatoAnnuncio.concluso) 
+                ? 'Finalizza'
+                : 'Concluso',
+              style: TextStyle(
+                color: ResQPetColors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 

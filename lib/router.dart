@@ -11,6 +11,8 @@ import 'package:resqpet/screens/admin_annunci_screen.dart';
 import 'package:resqpet/screens/admin_reports_screen.dart';
 import 'package:resqpet/screens/admin_utenti_screen.dart';
 import 'package:resqpet/screens/aggiorna_abbonamento_screen.dart';
+import 'package:resqpet/screens/annunci_in_bozza_screen.dart';
+import 'package:resqpet/screens/annunci_pubblicati_screen.dart';
 import 'package:resqpet/screens/annuncio_form_screen.dart';
 import 'package:resqpet/screens/bacheca_annunci_screen.dart';
 import 'package:resqpet/screens/crea_ente_screen.dart';
@@ -49,6 +51,8 @@ class Routes {
   static const adminRegistraEnte = Route(name: 'admin-registra-ente', path: '/admin/new-ente');
   static const creaSegnalazione = Route(name: 'crea-segnalazione', path: '/crea-segnalazione');
   static const bacheca = Route(name: 'bacheca', path: '/bacheca');
+  static const annunciPubblicati = Route(name: 'annunci-pubblicati', path: '/pubblicati');
+  static const annunciBozze = Route(name: 'annunci-bozze', path: '/bozze');
   static const dettagliAnnuncio = Route(name: 'annuncio', path: '/annuncio');
   static const segnalazioniInCarico = Route(name: 'in-carico', path: '/segnalazioni/inCarico');
   static const segnalazione = Route(name: 'segnalazione', path: '/segnalazione');
@@ -154,6 +158,20 @@ GoRouter router(Ref ref) {
           return BachecaAnnunciScreen(
             tipoAnnuncio: tipo,
           );
+        }
+      ),
+      GoRoute(
+        path: Routes.annunciPubblicati.path, 
+        name: Routes.annunciPubblicati.name,
+        builder: (context, state) {
+          return AnnunciPubblicatiScreen();
+        }
+      ),
+      GoRoute(
+        path: Routes.annunciBozze.path, 
+        name: Routes.annunciBozze.name,
+        builder: (context, state) {
+          return AnnunciInBozzaScreen();
         }
       ),
       GoRoute(

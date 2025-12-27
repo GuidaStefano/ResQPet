@@ -11,11 +11,11 @@ import 'package:resqpet/widgets/image_carousel.dart';
 
 class AnnuncioCard extends ConsumerWidget {
   final Annuncio annuncio;
-  final void Function(Utente, Annuncio)? onViewDetailsClick;
+  final List<Widget> Function(Annuncio, Utente)? actions;
 
   const AnnuncioCard({
     required this.annuncio,
-    this.onViewDetailsClick,
+    this.actions,
     super.key,
   });
 
@@ -161,25 +161,9 @@ class AnnuncioCard extends ConsumerWidget {
                 SizedBox(height: 7),
                 datiUtenteAsyncValue.whenOrNull(
                   data: (utente) => Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 10,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ResQPetColors.accent,
-                        ),
-                        onPressed: () {
-                          onViewDetailsClick?.call(utente, annuncio);
-                        },
-                        child: Text(
-                          "Vedi Dettagli",
-                          style: TextStyle(
-                            color: ResQPetColors.white,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                    ],
+                    children: actions?.call(annuncio, utente) ?? []
                   ),
                 ) ?? SizedBox()
               ],
