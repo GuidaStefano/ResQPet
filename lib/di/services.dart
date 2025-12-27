@@ -2,6 +2,7 @@ import 'package:resqpet/di/firebase.dart';
 import 'package:resqpet/di/stripe.dart';
 import 'package:resqpet/services/auth_service.dart';
 import 'package:resqpet/services/cloud_storage_service.dart';
+import 'package:resqpet/services/notification_service.dart';
 import 'package:resqpet/services/stripe_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,4 +24,10 @@ CloudStorageService cloudStorageService(Ref ref) {
 StripeService stripeService(Ref ref) {
   final stripe = ref.read(stripeProvider);
   return StripeService(stripe);
+}
+
+@Riverpod(keepAlive: true)
+NotificationService notificationService(Ref ref) {
+  final firebaseMessaging = ref.read(firebaseMessagingProvider);
+  return NotificationService(firebaseMessaging);
 }

@@ -1,6 +1,6 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,4 +19,9 @@ FirebaseStorage firebaseStorage(Ref ref) {
 @Riverpod(keepAlive: true)
 FirebaseFirestore firebaseFirestore(Ref ref) {
   return FirebaseFirestore.instance;
+}
+
+@Riverpod(keepAlive: true)
+FirebaseMessaging firebaseMessaging(Ref ref) {
+  return FirebaseMessaging.instance;
 }
