@@ -14,6 +14,11 @@ Stream<List<Utente>> utenti(Ref ref) {
   return utenteRepository.getAllExceptAdmin();
 }
 
+@riverpod
+String currentUserId(Ref ref) {
+  return ref.read(authRepositoryProvider).getCurrentUser()!.uid;
+}
+
 sealed class DeleteAccountState {
   DeleteAccountState();
 
