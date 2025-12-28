@@ -19,6 +19,12 @@ Stream<List<Segnalazione>> segnalazioniVicine(Ref ref, LatLng currentPosition) {
 }
 
 @riverpod
+Stream<List<Segnalazione>> segnalazioniDaRisolvere(Ref ref) {
+  final segnalazioniRepository = ref.read(segnalazioneRepositoryProvider);
+  return segnalazioniRepository.getSegnalazioniStream(StatoSegnalazione.presoInCarica);
+}
+
+@riverpod
 Stream<List<Segnalazione>> segnalazioni(Ref ref) {
   final segnalazioniRepository = ref.read(segnalazioneRepositoryProvider);
   return segnalazioniRepository.getSegnalazioniStream();
@@ -90,7 +96,7 @@ class SegnalazioneController extends _$SegnalazioneController {
     } on StateError catch(e) {
       state = SegnalazioneState.error(e.message);
     } catch(_) {
-      state = SegnalazioneState.error("Errore durante la creazione delle segnalazione.");
+      state = SegnalazioneState.error("Errore durante la creazione dells segnalazione.");
     }
   }
 
@@ -106,7 +112,35 @@ class SegnalazioneController extends _$SegnalazioneController {
     } on StateError catch(e) {
       state = SegnalazioneState.error(e.message);
     } catch(_) {
-      state = SegnalazioneState.error("Errore durante la rinuncia delle segnalazione.");
+      state = SegnalazioneState.error("Errore durante la rinuncia della segnalazione.");
+    }
+  }
+
+  Future<void> cancellaSegnalazione(String segnalazioneId) async {
+
+    try {
+
+      state = SegnalazioneState.loading();
+      await _segnalazioneRepository.cancellaSegnalazione(segnalazioneId);
+      state = SegnalazioneState.success();
+    } on StateError catch(e) {
+      state = SegnalazioneState.error(e.message);
+    } catch(_) {
+      state = SegnalazioneState.error("Errore durante la cancellazione della segnalazione.");
+    }
+  }
+
+
+  Future<void> risolviSegnalazione(String segnalazioneId) async {
+
+    try {
+      state = SegnalazioneState.loading();
+      await _segnalazioneRepository.risolviSegnalazione(segnalazioneId);
+      state = SegnalazioneState.success();
+    } on StateError catch(e) {
+      state = SegnalazioneState.error(e.message);
+    } catch(_) {
+      state = SegnalazioneState.error("Errore durante la finalizzazione della segnalazione.");
     }
   }
 
@@ -120,7 +154,7 @@ class SegnalazioneController extends _$SegnalazioneController {
     } on StateError catch(e) {
       state = SegnalazioneState.error(e.message);
     } catch(_) {
-      state = SegnalazioneState.error("Errore durante la presa in carico delle segnalazione.");
+      state = SegnalazioneState.error("Errore durante la presa in carico della segnalazione.");
     }
   }
 }

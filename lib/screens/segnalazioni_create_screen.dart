@@ -8,14 +8,14 @@ import 'package:resqpet/theme.dart';
 import 'package:resqpet/widgets/info_message.dart';
 import 'package:resqpet/widgets/segnalazione_card.dart';
 
-class SegnalazioniInCaricoScreen extends ConsumerWidget {
+class SegnalazioniCreateScreen extends ConsumerWidget {
 
-  const SegnalazioniInCaricoScreen({super.key});
+  const SegnalazioniCreateScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final segnalazioniAsyncValue = ref.watch(segnalazioniInCaricoProvider);
+    final segnalazioniAsyncValue = ref.watch(segnalazioneCreateProvider);
 
     ref.listen(segnalazioneControllerProvider, (_, state) {
       if(state is SegnalazioneError) {
@@ -34,13 +34,9 @@ class SegnalazioniInCaricoScreen extends ConsumerWidget {
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         iconTheme: const IconThemeData(color: ResQPetColors.primaryDark),
         title: Text(
-          "Segnalazioni in carico",
+          "Le tue Segnalazioni",
           style: const TextStyle(
             color: ResQPetColors.primaryDark,
             fontWeight: FontWeight.bold,
@@ -66,7 +62,7 @@ class SegnalazioniInCaricoScreen extends ConsumerWidget {
               data: (segnalazioni) {
 
                 if (segnalazioni.isEmpty) {
-                  return const InfoMessage(message: "Nessuna segnalazione in carico");
+                  return const InfoMessage(message: "Nessuna segnalazione trovata.");
                 }
 
                 return ListView.separated(
@@ -88,7 +84,7 @@ class SegnalazioniInCaricoScreen extends ConsumerWidget {
                                 extra: {
                                   'segnalazione': segnalazione,
                                   'isEnte': false,
-                                  'isCittadino': false
+                                  'isCittadino': true
                                 }
                               );
                             },
@@ -108,54 +104,6 @@ class SegnalazioniInCaricoScreen extends ConsumerWidget {
                               ),
                             ),
                           )
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("Rununciare alla segnalazione?"),
-                                    content: Text("Sicuro di voler rinunciare a questa segnalazione?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => context.pop(), 
-                                        child: const Text("No")
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          await ref.read(segnalazioneControllerProvider.notifier)
-                                            .abbandonaIncarico(segnalazione.id);
-                                          
-                                          if(!context.mounted) return;
-                                          context.pop();
-                                        },
-                                        child: const Text("Si")
-                                      )
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(
-                                color: ResQPetColors.primaryDark,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            child: Text(
-                              "Abbandona Incarico",
-                              style: TextStyle(
-                                color: ResQPetColors.primaryDark,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
                         )
                       ]
                     );

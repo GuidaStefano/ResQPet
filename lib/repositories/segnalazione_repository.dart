@@ -196,8 +196,10 @@ class SegnalazioneRepository {
     );
   }
 
-  Stream<List<Segnalazione>> getSegnalazioniStream() {
-    return dao.findByStatoStream(StatoSegnalazione.inAttesa);
+  Stream<List<Segnalazione>> getSegnalazioniStream([
+    StatoSegnalazione stato = StatoSegnalazione.inAttesa
+  ]) {
+    return dao.findByStatoStream(stato);
   }
 
   Stream<List<Segnalazione>> getSegnalazioniCreateByCittadino() {
@@ -210,7 +212,7 @@ class SegnalazioneRepository {
 
     return  dao.findByCittadino(uid)
       .map(
-        (segnalazioni) => 
+        (segnalazioni) =>
           segnalazioni.where((s) => s.stato == StatoSegnalazione.inAttesa)
             .toList()
       );
