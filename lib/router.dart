@@ -17,6 +17,7 @@ import 'package:resqpet/screens/annuncio_form_screen.dart';
 import 'package:resqpet/screens/bacheca_annunci_screen.dart';
 import 'package:resqpet/screens/crea_ente_screen.dart';
 import 'package:resqpet/screens/crea_segnalazione_screen.dart';
+import 'package:resqpet/screens/dashboard_vendite_screen.dart';
 import 'package:resqpet/screens/dettagli_annuncio_screen.dart';
 import 'package:resqpet/screens/dettagli_segnalazione_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
@@ -60,6 +61,7 @@ class Routes {
   static const aggiornaAnnuncio = Route(name: 'aggiorna-annuncio', path: '/aggiorna-annuncio/:tipo');
   static const aggiornaAbbonamento = Route(name: 'aggiorna-abbonamento', path: '/aggiorna-abbonamento');
   static const profilo = Route(name: 'profilo', path: '/profilo');
+  static const dashboardVendite = Route(name: 'vendite', path: '/dashboard-vendite');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -214,6 +216,11 @@ GoRouter router(Ref ref) {
         path: Routes.profilo.path, 
         name: Routes.profilo.name,
         builder: (context, state) => ProfiloScreen()
+      ),
+      GoRoute(
+        path: Routes.dashboardVendite.path, 
+        name: Routes.dashboardVendite.name,
+        builder: (context, state) => DashboardVenditeScreen()
       ),
     ],
     refreshListenable: GoRouterStreamNotifier(authService.getAuthChanges()),

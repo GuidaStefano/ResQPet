@@ -257,7 +257,10 @@ class HomeScreen extends ConsumerWidget {
       HomeCard.icon(
         title: 'VISUALIZZA DASHBOARD VENDITE',
         description: 'Visualizza l\'andamento delle tue vendite',
-        icon: Icons.monetization_on_outlined
+        icon: Icons.monetization_on_outlined,
+        onTitleTap: () => context.pushNamed(
+          Routes.dashboardVendite.name
+        ),
       )
     ];
   }
