@@ -156,7 +156,7 @@ class HomeScreen extends ConsumerWidget {
         style: resqpetTheme.textTheme.displaySmall,
         textAlign: TextAlign.start,
       ),
-      const SizedBox(height: 50),
+      const SizedBox(height: 30),
       HomeCard.image(
         title: "ADOTTA ORA", 
         description: "scopri gli annunci di adozione", 
@@ -184,6 +184,20 @@ class HomeScreen extends ConsumerWidget {
           context.pushNamed(
             Routes.bacheca.name,
             extra: TipoAnnuncio.vendita
+          );
+        },
+      ),
+      HomeCard.image(
+        title: "SEGNALAZIONI", 
+        description: "Visualizza le segnalazione che hai aperto",
+        image: Image.asset(
+          "assets/sample_shoot.jpg",
+          height: 120,
+          fit: BoxFit.cover
+        ),
+        onTitleTap: () {
+          context.pushNamed(
+            Routes.segnalazioniCreate.name
           );
         },
       ),
@@ -232,6 +246,14 @@ class HomeScreen extends ConsumerWidget {
         icon: Icons.raw_on_outlined,
         onTitleTap: () => context.pushNamed(
           Routes.annunciBozze.name
+        ),
+      ),
+      HomeCard.icon(
+        title: 'SEGNALAZIONI',
+        description: 'Visualizza le segnalazioni da risolvere',
+        icon: Icons.health_and_safety_outlined,
+        onTitleTap: () => context.pushNamed(
+          Routes.segnalazioniInCorso.name
         ),
       )
     ];

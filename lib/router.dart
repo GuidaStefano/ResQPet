@@ -22,7 +22,9 @@ import 'package:resqpet/screens/dettagli_annuncio_screen.dart';
 import 'package:resqpet/screens/dettagli_segnalazione_screen.dart';
 import 'package:resqpet/screens/home_screen.dart';
 import 'package:resqpet/screens/profilo_screen.dart';
+import 'package:resqpet/screens/segnalazioni_create_screen.dart';
 import 'package:resqpet/screens/segnalazioni_in_carico_screen.dart';
+import 'package:resqpet/screens/segnalazioni_in_corso_screen.dart';
 import 'package:resqpet/screens/segnalazioni_map_screen.dart';
 import 'package:resqpet/screens/signin_screen.dart';
 import 'package:resqpet/screens/signup_screen.dart';
@@ -62,6 +64,8 @@ class Routes {
   static const aggiornaAbbonamento = Route(name: 'aggiorna-abbonamento', path: '/aggiorna-abbonamento');
   static const profilo = Route(name: 'profilo', path: '/profilo');
   static const dashboardVendite = Route(name: 'vendite', path: '/dashboard-vendite');
+  static const segnalazioniInCorso = Route(name: 'segnalazioni-incorso', path: '/segnalazioni-incorso');
+  static const segnalazioniCreate = Route(name: 'segnalazioni-create', path: '/segnalazioni-create');
 }
 
 class GoRouterStreamNotifier extends ChangeNotifier {
@@ -115,11 +119,26 @@ GoRouter router(Ref ref) {
         builder: (context, _) => const SegnalazioniMapScreen()
       ),
       GoRoute(
+        name: Routes.segnalazioniCreate.name,
+        path: Routes.segnalazioniCreate.path,
+        builder: (context, _) => const SegnalazioniCreateScreen()
+      ),
+      GoRoute(
+        name: Routes.segnalazioniInCorso.name,
+        path: Routes.segnalazioniInCorso.path,
+        builder: (context, _) => const SegnalazioniInCorsoScreen()
+      ),
+      GoRoute(
         path: Routes.segnalazione.path,
         name: Routes.segnalazione.name,
         builder: (context, state) {
-          final s = state.extra as Segnalazione?;
-          return DettagliSegnalazioneScreen(segnalazione: s!);
+          final s = state.extra as Map<String, dynamic>;
+
+          return DettagliSegnalazioneScreen(
+            segnalazione: s['segnalazione'] as Segnalazione,
+            isCittadino: s['isCittadino'] as bool,
+            isEnte: s['isEnte'] as bool,
+          );
         }
       ),
       GoRoute(

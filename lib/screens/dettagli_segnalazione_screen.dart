@@ -13,9 +13,17 @@ import 'package:resqpet/widgets/image_carousel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DettagliSegnalazioneScreen extends ConsumerWidget {
-  final Segnalazione segnalazione;
 
-  const DettagliSegnalazioneScreen({super.key, required this.segnalazione});
+  final Segnalazione segnalazione;
+  final bool isEnte;
+  final bool isCittadino;
+
+  const DettagliSegnalazioneScreen({
+    super.key, 
+    required this.segnalazione,
+    this.isEnte = false,
+    this.isCittadino = false
+  });
 
   // Helper per determinare il colore basato sullo stato
   Color _getStatoColor(StatoSegnalazione stato) {
@@ -45,6 +53,84 @@ class DettagliSegnalazioneScreen extends ConsumerWidget {
     if (diff.inDays < 7) return '${diff.inDays} g fa';
 
     return '${diff.inDays ~/ 7} sett fa';
+  }
+
+
+  Widget? _buildFab(
+    BuildContext context, 
+    WidgetRef ref
+  ) {
+
+    if(segnalazione.stato == StatoSegnalazione.inAttesa && !isEnte && !isCittadino) {
+      return FloatingActionButton.extended(
+        onPressed: () async {
+          ref.read(segnalazioneControllerProvider.notifier)
+            .prendiInCarico(segnalazione.id);
+
+          if(context.mounted) context.pop();
+        },
+        backgroundColor: ResQPetColors.accent,
+        icon: const Icon(
+          Icons.volunteer_activism,
+          color: ResQPetColors.white,
+        ),
+        label: const Text(
+          'Prendi in carico',
+          style: TextStyle(
+            color: ResQPetColors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+
+    if(isEnte && segnalazione.stato == StatoSegnalazione.presoInCarica) {
+      return FloatingActionButton.extended(
+        onPressed: () async {
+          ref.read(segnalazioneControllerProvider.notifier)
+            .risolviSegnalazione(segnalazione.id);
+
+          if(context.mounted) context.pop();
+        },
+        backgroundColor: ResQPetColors.accent,
+        icon: const Icon(
+          Icons.check,
+          color: ResQPetColors.white,
+        ),
+        label: const Text(
+          'Finalizza',
+          style: TextStyle(
+            color: ResQPetColors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+
+    if(isCittadino && segnalazione.stato == StatoSegnalazione.inAttesa) {
+      return FloatingActionButton.extended(
+        onPressed: () async {
+          ref.read(segnalazioneControllerProvider.notifier)
+            .cancellaSegnalazione(segnalazione.id);
+
+          if(context.mounted) context.pop();
+        },
+        backgroundColor: Colors.red,
+        icon: const Icon(
+          Icons.cancel,
+          color: ResQPetColors.white,
+        ),
+        label: const Text(
+          'Cancella',
+          style: TextStyle(
+            color: ResQPetColors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+
+    return null;
   }
 
   @override
@@ -102,28 +188,7 @@ class DettagliSegnalazioneScreen extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: segnalazione.stato == StatoSegnalazione.inAttesa
-        ? FloatingActionButton.extended(
-            onPressed: () async {
-              ref.read(segnalazioneControllerProvider.notifier)
-                .prendiInCarico(segnalazione.id);
-
-              if(context.mounted) context.pop();
-            },
-            backgroundColor: ResQPetColors.accent,
-            icon: const Icon(
-              Icons.volunteer_activism,
-              color: ResQPetColors.white,
-            ),
-            label: const Text(
-              'Prendi in carico',
-              style: TextStyle(
-                color: ResQPetColors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
-        : null
+      floatingActionButton: _buildFab(context, ref)
     );
   }
 

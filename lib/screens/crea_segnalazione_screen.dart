@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:resqpet/controllers/segnalazioni_controller.dart';
 import 'package:resqpet/core/utils/functions.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/theme.dart';
+import 'package:resqpet/widgets/photo_upload_card.dart';
 import 'package:resqpet/widgets/resqpet_text_field.dart';
 
 class CreaSegnalazioneScreen extends ConsumerStatefulWidget {
@@ -29,7 +29,7 @@ class _CreaSegnalazioneScreenState extends ConsumerState<CreaSegnalazioneScreen>
   late TextEditingController _descrizioneController;
   late TextEditingController _indirizzoController;
 
-  final List<XFile> selectedFile = [];
+  final List<File> selectedFile = [];
 
   @override
   void initState() {
@@ -73,7 +73,7 @@ class _CreaSegnalazioneScreenState extends ConsumerState<CreaSegnalazioneScreen>
       final file = await pickImage(context, fromCamera: fromCamera);
 
       setState(() {
-        selectedFile.add(file);
+        selectedFile.add(File(file.path));
       });
 
       if(context.mounted) {
@@ -115,213 +115,142 @@ class _CreaSegnalazioneScreenState extends ConsumerState<CreaSegnalazioneScreen>
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(25),
         child: Column(
-          spacing: 30,
+          spacing: 10,
           children: [
             SizedBox(
               width: 140,
               child: Image.asset('assets/logo-con-scritta.png'),
             ),
-            Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 10,
-                    offset: Offset(5, 5),
-                    color: Colors.black12
-                  )
-                ],
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Stack(
-                alignment: AlignmentGeometry.center,
-                children: [
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    height: 150,
-                    child: Image.asset(
-                      "assets/card1.jpg",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Align(
-                    alignment: AlignmentGeometry.center,
-                    child: Container(
-                      height: 150,
-                      color: Color.fromARGB(95, 0, 0, 0)
-                    )
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) => Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 70
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: ResQPetColors.accent
-                                    ),
-                                    onPressed: () async {
+            PhotoUploadCard(
+              onPickImageFromCamera: () {
+                selectImage(context, fromCamera: true);
+              }, 
+              onPickImageFromGallery: () {
+                selectImage(context);
+              }, 
+              selectedImages: selectedFile
+            ),
+            const SizedBox(height: 5),
+            _buildFormSection(),
+            const SizedBox(height: 20),
+            _buildGPSInfoCard(),
+            const SizedBox(height: 24),
 
-                                      try {
-                                        await selectImage(context, fromCamera: true);
-                                      } catch(_) {
-                                        if(context.mounted) {
-                                          showErrorSnackBar(
-                                            context, 
-                                            "Si e' verificato un errore durante l'acquisizione della foto."
-                                          );
-                                        }
-                                      } finally {
-                                        if(context.mounted) {
-                                          context.pop();
-                                        }
-                                      }
-                                    },
-                                    child: const Text(
-                                      'Scatta una Foto',
-                                      style: TextStyle(
-                                        color: ResQPetColors.white,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                  ),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: ResQPetColors.white
-                                      ),
-                                      onPressed: () async {
-                                        try {
-                                          await selectImage(context);
-                                        } catch(_) {
-                                          if(context.mounted) {
-                                            showErrorSnackBar(
-                                              context, 
-                                              "Si e' verificato un errore durante il caricamento della foto dalla galleria."
-                                            );
-                                          }
-                                        } finally {
-                                          if(context.mounted) {
-                                            context.pop();
-                                          }
-                                        }
-                                      },
-                                      child: const Text(
-                                        'Carica dalla Galleria',
-                                        style: TextStyle(
-                                          color: ResQPetColors.onBackground,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            )
-                          );
-                        },
-                        color: ResQPetColors.white,
-                        iconSize: 35,
-                        icon: Icon(Icons.cloud_upload_outlined)
-                      ),
-                      Text(
-                        "Carica una foto!",
-                        style: TextStyle(
-                          color: ResQPetColors.white,
-                          fontWeight: FontWeight.w800
-                        ),
-                      )
-                    ],
-                  )
-                ],
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: _submit,
+                icon: const Icon(Icons.send),
+                label: const Text(
+                  'Invia Segnalazione',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ResQPetColors.accent,
+                  foregroundColor: ResQPetColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                ),
               ),
             ),
-            Form(
-              key: _formKey,
-              child: Column(
-                spacing: 20,
-                children: [
-                  ResQPetTextField(
-                    controller: _labelController,
-                    label: 'Etichetta',
-                    validator: (value) =>
-                        (value == null || value.isEmpty)
-                            ? 'Inserisci un\'etichetta.'
-                            : null,
-                  ),
-                  ResQPetTextField(
-                    controller: _descrizioneController,
-                    maxLines: 4,
-                    label: 'Descrizione',
-                    validator: (value) =>
-                        (value == null || value.isEmpty)
-                            ? 'Inserisci una descrizione'
-                            : null,
-                  ),
-                  ResQPetTextField(
-                    controller: _indirizzoController,
-                    label: 'Indirizzo',
-                    prefixIcon: Icon(Icons.location_on_outlined),
-                    validator: (value) =>
-                        (value == null || value.isEmpty)
-                            ? 'Inserisci un indirizzo'
-                            : null,
-                  ),
-                  Text("L'applicazione oltre all'indirizzo registra anche la posizione attuale da cui la segnalazione viene effettuata.")
-                ],
-              ),
-            ),
-            const Divider(height: 12),
-            Row(
-              spacing: 10,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ResQPetColors.accent
-                  ),
-                  onPressed: () async {
-                    try { 
-                      await _submit();
-                    } catch (_) {
-                      if(!context.mounted) return;
-                      showErrorSnackBar(context, "Si e' verificato un errore");
-                    }
-                  },
-                  child: const Text(
-                    'Invia Segnalazione',
-                    style: TextStyle(
-                      color: ResQPetColors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ResQPetColors.white
-                  ),
-                  onPressed: (){
-                    context.pop();
-                  },
-                  child: const Text(
-                    'Annulla',
-                    style: TextStyle(
-                      color: ResQPetColors.onBackground,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ],
-            )
+            const SizedBox(height: 20),
           ],
         ),
       )
+    );
+  }
+
+  Widget _buildGPSInfoCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.gps_fixed, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Posizione Automatica',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'La posizione GPS verrà registrata automaticamente al momento dell\'invio',
+                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildFormSection() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Dettagli Segnalazione',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: ResQPetColors.primaryDark,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ResQPetTextField(
+            controller: _labelController,
+            label: 'Titolo',
+            prefixIcon: const Icon(Icons.title),
+            validator: (value) => (value == null || value.trim().isEmpty) 
+              ? 'Inserisci un titolo' 
+              : null,
+          ),
+          const SizedBox(height: 12),
+          ResQPetTextField(
+            controller: _descrizioneController,
+            maxLines: 4,
+            label: 'Descrizione',
+            prefixIcon: const Icon(Icons.description),
+            validator: (value) => (value == null || value.trim().isEmpty)
+              ? 'Inserisci una descrizione'
+              : null,
+          ),
+          const SizedBox(height: 12),
+          ResQPetTextField(
+            label: 'Indirizzo',
+            controller: _indirizzoController,
+            prefixIcon: Icon(Icons.location_on),
+            validator: (value) => (value == null || value.trim().isEmpty)
+              ? 'Inserisci un indirizzo'
+              : null,
+          ),
+        ],
+      ),
     );
   }
 }
