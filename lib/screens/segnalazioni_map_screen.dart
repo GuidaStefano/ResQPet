@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,13 +24,12 @@ class SegnalazioniMapScreen extends ConsumerStatefulWidget {
 
 class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
 
-  static const double initialZoom = 6.0;
+  static const double initialZoom = 10;
   static const double maxZoom = 16;
   static const double minZoom = 4;
   bool _isLoading = false;
 
   late final MapController _mapController;
-  double _zoomLevel = initialZoom;
 
   LatLng _currentLatLng = italyCoordinates;
 
@@ -47,24 +48,14 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
     _mapController.dispose();
   }
 
-  void zoomIn() {
-
-    if(_zoomLevel == maxZoom) {
-      return;
-    }
-
-    _zoomLevel++;
-    _mapController.move(_currentLatLng, _zoomLevel);
-  }
-
-  void zoomOut() {
-
-    if(_zoomLevel == minZoom) {
-      return;
-    }
-
-    _zoomLevel--;
-    _mapController.move(_currentLatLng, _zoomLevel);
+  Color _getRandomColor() {
+    final Random random = Random();
+    return Color.fromARGB(
+      255, // Alpha (opacity)
+      random.nextInt(256), // Red
+      random.nextInt(256), // Green
+      random.nextInt(256), // Blue
+    );
   }
 
   Future<void> _centerMap(BuildContext context) async {
@@ -78,6 +69,8 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
       _currentLatLng = latlang;
       _isLoading = false;
     });
+
+    _mapController.move(_currentLatLng, initialZoom);
   }
 
   @override
@@ -104,25 +97,45 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.resqpet.app',
               ),
+              CircleLayer(
+                circles: [
+                  CircleMarker(
+                    borderColor: Colors.blueAccent,
+                    color: Colors.blue.withAlpha(50),
+                    borderStrokeWidth: 2,
+                    point: _currentLatLng,
+                    radius: distanceKm * 1000,
+                    useRadiusInMeter: true,
+                  ),
+                ],
+              ),
               segnalazioniVicine.whenOrNull(
                 data: (segnalazioni) {
 
                   final markers = segnalazioni.map((segnalazione) {
+
                     return Marker(
                       point: LatLng(
                         segnalazione.posizione.latitude,
-                        segnalazione.posizione.latitude
-                      ), 
+                        segnalazione.posizione.longitude
+                      ),
+                      width: 80, // Increased size
+                      height: 80,
                       child: IconButton(
                         onPressed: () {
                           context.pushNamed(
                             Routes.segnalazione.name, 
-                            extra: segnalazione
+                            extra: {
+                              'segnalazione': segnalazione,
+                              'isEnte': false,
+                              'isCittadino': false
+                            }
                           );
                         },
                         icon: Icon(
                           Icons.pets_outlined,
-                          color: Colors.red,
+                          size: 30,
+                          color: _getRandomColor(),
                         )
                       )
                     );
@@ -156,16 +169,6 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 spacing: 10,
                 children: [
-                  FloatingActionButton(
-                    mini: true,
-                    onPressed: () => zoomIn(),
-                    child: Icon(Icons.zoom_in),
-                  ),
-                  FloatingActionButton(
-                    mini: true,
-                    onPressed: () => zoomOut(),
-                    child: Icon(Icons.zoom_out),
-                  ),
                   FloatingActionButton(
                     backgroundColor: ResQPetColors.primaryDark,
                     onPressed: () => _centerMap(context),

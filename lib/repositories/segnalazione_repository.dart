@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:resqpet/core/utils/constants.dart';
 import 'package:resqpet/core/utils/functions.dart';
 import 'package:resqpet/dao/segnalazione_dao.dart';
 import 'package:resqpet/models/segnalazione.dart';
@@ -109,8 +110,6 @@ class SegnalazioneRepository {
   }
 
   Stream<List<Segnalazione>> getSegnalazioniVicine(double latitudine, double longitudine) {
-
-    const distanceKm = 5.0;
 
     if (!isValidLatitude(latitudine)) {
       throw ArgumentError.value(
