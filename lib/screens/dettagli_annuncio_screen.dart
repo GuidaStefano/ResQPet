@@ -13,6 +13,7 @@ import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/router.dart';
 import 'package:resqpet/theme.dart';
+import 'package:resqpet/widgets/crea_report_bottom_sheet.dart';
 import 'package:resqpet/widgets/image_carousel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -62,7 +63,17 @@ class DettagliAnnuncioScreen extends ConsumerWidget {
         ),
         actions: [
           if(currentUID != annuncio.creatoreRef) IconButton(
-            onPressed: () {}, 
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: ResQPetColors.surface,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (_) => CreaReportBottomSheet(annuncioRef: annuncio.id),
+              );
+            }, 
             icon: Icon(Icons.report)
           ),
           if(currentUID == annuncio.creatoreRef 

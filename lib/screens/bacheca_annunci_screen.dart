@@ -145,8 +145,7 @@ class _BachecaAnnunciScreenState extends ConsumerState<BachecaAnnunciScreen> {
                           actions: (annuncio, utente) {
 
                             return [
-                              SizedBox(
-                                width: double.infinity,
+                              Expanded(
                                 child: ResQPetButton(
                                   text: "Dettagli",
                                   onPressed: () {

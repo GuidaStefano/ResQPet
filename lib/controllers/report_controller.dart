@@ -40,6 +40,7 @@ class ReportController extends _$ReportController {
   @override
   ReportState build() {
     _reportRepository = ref.read(reportRepositoryProvider);
+    _annuncioRepository = ref.read(annuncioRepositoryProvider);
     return ReportState.idle();
   }
 
@@ -52,6 +53,25 @@ class ReportController extends _$ReportController {
       state = ReportState.success();
     } catch (e) {
       state = ReportState.error("Si e' verificato un errore durante la risoluzione del report");
+    }
+  }
+
+  Future<void> creaReport({
+    required String motivazione,
+    required String descrizione,
+    required String annuncioRef
+  }) async {
+    state = ReportState.loading();
+
+    try {
+      _reportRepository.creaReport(
+        motivazione: motivazione,
+        descrizione: descrizione,
+        annuncioRef: annuncioRef
+      );
+      state = ReportState.success();
+    } catch (e) {
+      state = ReportState.error("Si e' verificato un errore durante la creazione del report");
     }
   }
 

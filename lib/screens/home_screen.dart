@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resqpet/controllers/abbonamento_controller.dart';
 import 'package:resqpet/controllers/dati_utente_controller.dart';
+import 'package:resqpet/controllers/logout_controller.dart';
 import 'package:resqpet/core/utils/snackbar.dart';
 import 'package:resqpet/models/annuncio/tipo_annuncio.dart';
 import 'package:resqpet/models/utente.dart';
@@ -118,7 +119,8 @@ class HomeScreen extends ConsumerWidget {
 
   Widget navbar({
     bool showProfileButton = false,
-    void Function()? onProfileClick
+    void Function()? onProfileClick,
+    void Function()? onLogoutClick
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,6 +134,14 @@ class HomeScreen extends ConsumerWidget {
           onPressed: onProfileClick, 
           icon: Icon(
             Icons.account_circle_sharp,
+            color: Colors.black,
+          )
+        ),
+
+        if(!showProfileButton) IconButton(
+          onPressed: onLogoutClick, 
+          icon: Icon(
+            Icons.logout,
             color: Colors.black,
           )
         )
@@ -358,6 +368,10 @@ class HomeScreen extends ConsumerWidget {
                         showProfileButton: TipoUtente.admin != utente.tipo,
                         onProfileClick: () {
                           context.pushNamed(Routes.profilo.name);
+                        },
+                        onLogoutClick: () {
+                          ref.read(logoutControllerProvider.notifier)
+                            .logout();
                         }
                       ),
                       ...switch(utente.tipo) {
