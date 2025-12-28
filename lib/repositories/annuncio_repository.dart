@@ -314,6 +314,17 @@ class AnnuncioRepository {
   }
 
   Future<bool> cancellaAnnuncio(String annuncioId) async {
+
+
+    try {
+      final annuncio = await annuncioDao.findById(annuncioId);
+      if(annuncio != null) {
+        for(final path in annuncio.foto) {
+          storageService.deleteFile(path);
+        }
+      }
+    } catch(_) {}
+
     return await annuncioDao.deleteById(annuncioId);
   }
 

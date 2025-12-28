@@ -40,6 +40,7 @@ class ReportController extends _$ReportController {
   @override
   ReportState build() {
     _reportRepository = ref.read(reportRepositoryProvider);
+    _annuncioRepository = ref.read(annuncioRepositoryProvider);
     return ReportState.idle();
   }
 
