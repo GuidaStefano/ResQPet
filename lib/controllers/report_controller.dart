@@ -55,6 +55,25 @@ class ReportController extends _$ReportController {
     }
   }
 
+  Future<void> creaReport({
+    required String motivazione,
+    required String descrizione,
+    required String annuncioRef
+  }) async {
+    state = ReportState.loading();
+
+    try {
+      _reportRepository.creaReport(
+        motivazione: motivazione,
+        descrizione: descrizione,
+        annuncioRef: annuncioRef
+      );
+      state = ReportState.success();
+    } catch (e) {
+      state = ReportState.error("Si e' verificato un errore durante la creazione del report");
+    }
+  }
+
   Future<void> cancellaReport(Report report) async {
     state = ReportState.loading();
 
