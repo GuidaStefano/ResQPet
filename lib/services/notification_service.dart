@@ -15,4 +15,16 @@ class NotificationService {
   Future<void> unsubscribeFromTopic() async {
     await _firebaseMessaging.unsubscribeFromTopic(topicName);
   }
+
+  Future<void> askForPermissions() async {
+    _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+  }
 }

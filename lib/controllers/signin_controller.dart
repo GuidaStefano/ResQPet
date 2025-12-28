@@ -49,6 +49,7 @@ class SignInController extends _$SignInController {
       final utente = await ref.read(datiUtenteProvider.future);
       
       if(utente.tipo == TipoUtente.soccorritore) {
+        await _notificationService.askForPermissions();
         await _notificationService.subscriptToTopic();
       }
 
