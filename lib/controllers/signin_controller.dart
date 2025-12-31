@@ -53,6 +53,7 @@ class SignInController extends _$SignInController {
         await _notificationService.subscriptToTopic();
       }
 
+      if(!ref.mounted) return;
       state = SignInState.success();
     } on FirebaseAuthException catch(e) {
       state = SignInState.error(e.message ?? "Errore con le credenziali");

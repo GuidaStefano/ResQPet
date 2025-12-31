@@ -103,9 +103,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     showSnackBar(context, 'Abbonamento selezionato!');
   }
 
-  void _confirmSignUp() {
-
-    
+  Future<void> _confirmSignUp() async {
 
     final Map<String, dynamic> dataToUpload = {
       'nominativo': _formTextControllers['nominativo']!.text.trim(),
@@ -124,7 +122,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       });
     }
 
-    ref.read(signUpControllerProvider.notifier)
+    await ref.read(signUpControllerProvider.notifier)
       .registraUtente(selectedAccount, dataToUpload);
   }
 
@@ -146,13 +144,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   @override
   void dispose() {
+    super.dispose();
+
     _pageController.dispose();
 
     for(final controller in _formTextControllers.values) {
       controller.dispose();
     }
-
-    super.dispose();
   }
 
 

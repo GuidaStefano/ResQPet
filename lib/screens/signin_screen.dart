@@ -117,7 +117,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 )
               ),
               switch(state) {
-                SignInError(:final error) => Text(error),
+                SignInError(:final error) => Text(
+                  error,
+                  style: TextStyle(
+                    color: Colors.redAccent
+                  ),
+                ),
                 SignInLoading() => const CircularProgressIndicator(),
                 _ => const SizedBox()
               }

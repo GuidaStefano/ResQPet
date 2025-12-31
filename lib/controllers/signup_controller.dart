@@ -61,6 +61,8 @@ class SignUpController extends _$SignUpController {
             nominativo: nominativo,
             numeroTelefono: numeroTelefono
           );
+
+          if(!ref.mounted) return;
           state = SignUpState.success();
           return;
         case TipoUtente.soccorritore:
@@ -70,6 +72,8 @@ class SignUpController extends _$SignUpController {
             nominativo: nominativo, 
             numeroTelefono: numeroTelefono
           );
+          
+          if(!ref.mounted) return;
           state = SignUpState.success();
           return;
         case TipoUtente.venditore: {
@@ -92,6 +96,7 @@ class SignUpController extends _$SignUpController {
           await _stripeRepository.creaSessioneCheckout(prezzoAbbonamento);
           final status = await _stripeRepository.effettuaPagamento();
 
+          if(!ref.mounted) return;
           state = switch(status) {
             StripePaymentError(:final exception) => SignUpState.error(
               exception.error.message ?? "Si e' verificato un problema con il pagamento!"
@@ -113,6 +118,8 @@ class SignUpController extends _$SignUpController {
             partitaIVA: partitaIVA,
             sedeLegale: sedeLegale
           );
+          
+          if(!ref.mounted) return;
 
           state = SignUpState.success();
           return;
