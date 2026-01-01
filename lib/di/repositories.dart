@@ -26,7 +26,7 @@ ReportRepository reportRepository(Ref ref) {
   return ReportRepository(reportDao: reportDao, authService: authService);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AbbonamentoRepository abbonamentoRepository(Ref ref) {
 
   final authService = ref.read(authServiceProvider);
@@ -66,8 +66,15 @@ AuthRepository authRepository(Ref ref) {
   return AuthRepository(authService);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AnnuncioRepository annuncioRepository(Ref ref) {
   final annuncioDao = ref.read(annuncioDaoProvider);
-  return AnnuncioRepository(annuncioDao: annuncioDao);
+  final authService = ref.read(authServiceProvider);
+  final storageService = ref.read(cloudStorageServiceProvider);
+  
+  return AnnuncioRepository(
+    annuncioDao: annuncioDao,
+    authService: authService,
+    storageService: storageService
+  );
 }

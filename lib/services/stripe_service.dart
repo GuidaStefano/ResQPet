@@ -24,20 +24,21 @@ class StripeService {
 
   StripeService(this._stripe);
 
-  Future<void> createPayment(String amount, [String currency = 'EUR']) async {
+  Future<void> createPayment(double amount, [String currency = 'EUR']) async {
 
-    final paymentIntent = await _createPaymentIntent(amount, currency);
+    final paymentIntent = await _createPaymentIntent(
+      (amount * 100).round().toString(),
+      currency
+    );
 
     await _stripe.initPaymentSheet(
       paymentSheetParameters: SetupPaymentSheetParameters(
-        paymentIntentClientSecret: paymentIntent.clientSecret,
+        customFlow: false,
+        paymentIntentClientSecret: paymentIntent['client_secret'],
         googlePay: PaymentSheetGooglePay(
           testEnv: true,
           currencyCode: currency,
           merchantCountryCode: 'IT',
-        ),
-        applePay: PaymentSheetApplePay(
-          merchantCountryCode: 'IT'
         ),
         merchantDisplayName: stripe_config.merchantName
       )
@@ -53,12 +54,11 @@ class StripeService {
     }
   }
 
-  Future<PaymentIntent> _createPaymentIntent(String amount, String currency) async {
+  Future<Map<String, dynamic>> _createPaymentIntent(String amount, String currency) async {
     
     final body = {
       'amount': amount,
-      'currency': currency,
-      'payment_method_types[]': 'card'
+      'currency': currency
     };
 
     final response = await http.post(
@@ -69,9 +69,7 @@ class StripeService {
       },
       body: body
     );
-
-    return PaymentIntent.fromJson(
-      jsonDecode(response.body)
-    );
+    
+    return jsonDecode(response.body);
   }
 }

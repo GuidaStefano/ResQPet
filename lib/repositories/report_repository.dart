@@ -41,6 +41,15 @@ class ReportRepository {
     return reportDao.findAll();
   }
 
+  Stream<List<Report>> getReportsStream({StatoReport? stato}) {
+    
+    if (stato != null) {
+      return reportDao.findByStatoStream(stato);
+    }
+
+    return reportDao.findAllStream();
+  }
+
   // Segna un report come risolto dato il suo ID
   Future<Report> risolviReport(String reportId) async {
     final report = await reportDao.findById(reportId);

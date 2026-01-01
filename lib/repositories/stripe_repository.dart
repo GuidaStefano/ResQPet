@@ -5,7 +5,7 @@ class StripeRepository {
 
   StripeRepository(this._stripe);
 
-  Future<void> creaSessioneCheckout(String amount) async {
+  Future<void> creaSessioneCheckout(double amount) async {
     await _stripe.createPayment(amount);
   }
 

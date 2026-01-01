@@ -8,31 +8,31 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dao.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 UtenteDao utenteDao(Ref ref) {
   final firebaseFirestore = ref.read(firebaseFirestoreProvider);
   return UtenteDao(firebaseFirestore);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AnnuncioDao annuncioDao(Ref ref) {
   final firebaseFirestore = ref.read(firebaseFirestoreProvider);
   return AnnuncioDao(firebaseFirestore);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 ReportDao reportDao(Ref ref) {
   final firebaseFirestore = ref.read(firebaseFirestoreProvider);
   return ReportDao(firebaseFirestore);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 SegnalazioneDao segnalazioneDao(Ref ref) {
   final firebaseFirestore = ref.read(firebaseFirestoreProvider);
   return SegnalazioneDao(firebaseFirestore);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AbbonamentoDao abbonamentoDao(Ref ref) {
   final firebaseFirestore = ref.read(firebaseFirestoreProvider);
   return AbbonamentoDao(firebaseFirestore);

@@ -5,18 +5,24 @@ import 'package:resqpet/dao/utente_dao.dart';
 import 'package:resqpet/models/utente.dart';
 import 'package:resqpet/services/auth_service.dart';
 
+import 'package:cloud_functions/cloud_functions.dart';
+
 class UtenteRepository {
   final AuthService _authService;
   final UtenteDao _utenteDao;
 
   UtenteRepository(this._authService, this._utenteDao);
 
-  Future<Utente?> getUtenteInfo() async {
+  Future<Utente?> getLoggedUtenteInfo() async {
     final currentUser = _authService.currentUser;
     if (currentUser == null) {
       return null;
     }
-    return _utenteDao.findById(currentUser.uid);
+    return getUtenteInfoById(currentUser.uid);
+  }
+
+  Future<Utente?> getUtenteInfoById(String id) async {
+    return _utenteDao.findById(id);
   }
 
   Future<Utente> aggiornaProfiloInfo(Utente utente) async {
@@ -161,10 +167,23 @@ class UtenteRepository {
       throw StateError('Nessun utente autenticato');
     }
 
-    await _utenteDao.deleteById(currentUser.uid);
-    await currentUser.delete();
+    await cancellaAccountById(currentUser.uid);
   }
 
+
+  Future<void> cancellaAccountById(String id) async {
+    final currentUser = _authService.currentUser;
+    if (currentUser == null) {
+      throw StateError('Nessun utente autenticato');
+    }
+
+    await _utenteDao.deleteById(id);
+    final callable = FirebaseFunctions.instance
+      .httpsCallable("deleteUserAccountByUID");
+
+    await callable.call({ 'uid': id });
+  }
+  
   Future<Utente> _registraUtente({
     required String email,
     required String password,
@@ -218,5 +237,14 @@ class UtenteRepository {
     );
     
     return await _utenteDao.create(utente);
+  }
+
+  Stream<List<Utente>> getAllExceptAdmin() {
+    return _utenteDao.findAllStream()
+      .map(
+        (utenti) => 
+          utenti.where((utente) => utente.tipo != TipoUtente.admin)
+            .toList()
+      );
   }
 }

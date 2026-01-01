@@ -78,22 +78,28 @@ class SegnalazioneDao implements Dao<Segnalazione, String> {
 
   /// Permette di recuperare le segnalazioni assegnate a un Soccorritore specifico.
   /// Necessario per il requisito "Prende in carico segnalazione" e "Visualizza segnalazioni" [SDD 4.2]
-  Future<List<Segnalazione>> findBySoccorritore(String soccorritoreId) async {
-    final querySnapshot = await _collection
+  Stream<List<Segnalazione>> findBySoccorritore(String soccorritoreId) {
+    return _collection
       .where('soccorritore_ref', isEqualTo: soccorritoreId)
-      .get();
-
-    return querySnapshot.docs.map((doc) => doc.data()).toList();
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs
+          .map((doc) => doc.data())
+            .toList();
+      });
   }
 
   /// Permette di recuperare lo storico delle segnalazioni di un Cittadino.
   /// Necessario per il requisito "Lista segnalazioni" lato cittadino [SDD 4.2]
-  Future<List<Segnalazione>> findByCittadino(String cittadinoId) async {
-    final querySnapshot = await _collection
+  Stream<List<Segnalazione>> findByCittadino(String cittadinoId) {
+    return _collection
       .where('cittadino_ref', isEqualTo: cittadinoId)
-      .get();
-
-    return querySnapshot.docs.map((doc) => doc.data()).toList();
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs
+          .map((doc) => doc.data())
+            .toList();
+      });
   }
 
   /// Permette di filtrare le segnalazione per stato

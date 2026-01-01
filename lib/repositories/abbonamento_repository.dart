@@ -89,4 +89,8 @@ class AbbonamentoRepository {
     }
   }
 
+  Future<List<Abbonamento>> getAll() async {
+    return abbonamentoDao.findAll();
+  }
+
 }
