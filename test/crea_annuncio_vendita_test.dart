@@ -25,18 +25,21 @@ void main() {
     final userUID = userCredential.user!.uid;
 
     await container
-        .read(firebaseFirestoreProvider)
-        .collection('utenti')
-        .doc(userUID)
-        .set({
-          'nominativo': 'Luca',
-          'email': 'mockuser@resqpet.it',
-          'dataCreazione': Timestamp.now(),
-          'numeroTelefono': '0123456789',
+      .read(firebaseFirestoreProvider)
+      .collection('utenti')
+      .doc(userUID)
+      .set({
+        'nominativo': 'Luca',
+        'email': 'mockuser@resqpet.it',
+        'dataCreazione': Timestamp.now(),
+        'numeroTelefono': '0123456789',
+        'dettagli_venditore': {
           'indirizzo': 'via test',
           'partitaIVA': 'IT12345678901',
           'dataSottoscrizioneAbbonamento': Timestamp.now(),
-        });
+          'abbonamento_ref': 'abbonamento_id1'
+        }
+      });
   }); 
 
   tearDown(() {
@@ -61,7 +64,7 @@ void main() {
         prezzo: 500, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '123456789123456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -90,7 +93,7 @@ void main() {
         prezzo: 700, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '380098100123456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -119,7 +122,7 @@ void main() {
         prezzo: 500, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '380031331323456'
-        ), 
+      ), 
       completes
     );
   });  
@@ -142,7 +145,7 @@ void main() {
         prezzo: 700, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '380098100123456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -171,7 +174,7 @@ void main() {
         prezzo: 100, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '380098100123456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -200,7 +203,7 @@ void main() {
         prezzo: 800, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '380098100123456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -229,7 +232,7 @@ void main() {
         prezzo: 800, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '380098100123456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -258,7 +261,7 @@ void main() {
         prezzo: 800, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '1000339240F13531'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -287,7 +290,7 @@ void main() {
         prezzo: 0, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '100033924013531'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -316,7 +319,7 @@ void main() {
         prezzo: 800, 
         dataNascita: '12/12/2025', 
         numeroMicrochip: '100033924013531'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -345,7 +348,7 @@ void main() {
         prezzo: 800, 
         dataNascita: '12-12-2025', 
         numeroMicrochip: '100033924013531'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -374,7 +377,7 @@ void main() {
         prezzo: 900, 
         dataNascita: '12/11/2027', 
         numeroMicrochip: '380031331323456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -403,7 +406,7 @@ test('TC_CreaAnnV_13 - Errore data di nascita non valida', () async {
         prezzo: 900, 
         dataNascita: '12/19/2017', 
         numeroMicrochip: '380031331323456'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
