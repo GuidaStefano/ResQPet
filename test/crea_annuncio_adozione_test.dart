@@ -23,17 +23,19 @@ void main() {
     final userUID = userCredential.user!.uid;
 
     await container
-        .read(firebaseFirestoreProvider)
-        .collection('utenti')
-        .doc(userUID)
-        .set({
-          'nominativo': 'Luca',
-          'email': 'mockuser@resqpet.it',
-          'dataCreazione': Timestamp.now(),
-          'numeroTelefono': '0123456789',
+      .read(firebaseFirestoreProvider)
+      .collection('utenti')
+      .doc(userUID)
+      .set({
+        'nominativo': 'Luca',
+        'email': 'mockuser@resqpet.it',
+        'dataCreazione': Timestamp.now(),
+        'numeroTelefono': '0123456789',
+        'dettagli_ente': {
           'sedeLegale': 'via test',
           'partitaIVA': 'IT12345678901',
-        });
+        }
+      });
   }); 
 
   tearDown(() {
@@ -58,7 +60,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -87,7 +89,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -116,7 +118,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       completes
     );
   });
@@ -139,7 +141,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -168,7 +170,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -197,7 +199,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -226,7 +228,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -255,7 +257,7 @@ void main() {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -284,7 +286,7 @@ test('TC_CreaAnnA_9 - Errore: note sanitarie < 3', () async {
         storia: 'cambia frequentemente casa',
         noteSanitarie: '',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -312,7 +314,7 @@ test('TC_CreaAnnA_9 - Errore: note sanitarie < 3', () async {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'Il cane è stato presentato per una visita di controllo periodica. Il proprietario riferisce un comportamento vivace e un appetito regolare. Non si segnalano episodi di vomito o diarrea recenti.',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -341,7 +343,7 @@ test('TC_CreaAnnA_9 - Errore: note sanitarie < 3', () async {
         storia: '',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -370,7 +372,7 @@ test('TC_CreaAnnA_9 - Errore: note sanitarie < 3', () async {
         storia: 'Bob è un esemplare di Pastore Belga Malinois dall \'eleganza fiera e dal portamento atletico. Il suo corpo è una macchina di muscoli scattanti, rivestito da un mantello corto color fulvo carbonato che brilla sotto i raggi del sole. La caratteristica che colpisce immediatamente è la sua maschera nera, intensa e definita, che incornicia un muso affilato e vigile.',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
@@ -399,7 +401,7 @@ test('TC_CreaAnnA_9 - Errore: note sanitarie < 3', () async {
         storia: 'cambia frequentemente casa',
         noteSanitarie: 'cane appena sterilizzato',
         carattere: 'frizzantino'
-        ), 
+      ), 
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
