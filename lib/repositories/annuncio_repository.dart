@@ -262,27 +262,26 @@ class AnnuncioRepository {
         'dataNascita', 
         'Data di nascita deve essere nel formato gg/mm/aaaa'
       );
-    }
+    } 
     else {
-try {
-    // parseStrict lancia un'eccezione se la data non è reale (es. 31/02)
-    final inputDate = DateFormat('dd/MM/yyyy').parseStrict(dataNascita);
+      try {
+        final inputDate = DateFormat('dd/MM/yyyy').parseStrict(dataNascita);
 
-    if (inputDate.isAfter(DateTime.now())) {
-      throw ArgumentError.value(
-        dataNascita,
-        'dataNascita',
-        'Data di nascita non può essere futura'
-      );
-    }
-  } on FormatException {
-    throw ArgumentError.value(
-      dataNascita,
-      'dataNascita',
-      'La data inserita non esiste nel calendario'
-    );
+        if (inputDate.isAfter(DateTime.now())) {
+          throw ArgumentError.value(
+            dataNascita,
+            'dataNascita',
+            'Data di nascita non può essere futura'
+          );
+        }
+      } on FormatException {
+        throw ArgumentError.value(
+          dataNascita,
+          'dataNascita',
+          'La data inserita non esiste nel calendario'
+        );
+      }
   }
-}
 
     if (!microchipRegex.hasMatch(numeroMicrochip)) {
       throw ArgumentError.value(
