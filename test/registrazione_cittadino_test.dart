@@ -1,8 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:resqpet/di/firebase.dart';
 import 'package:resqpet/di/repositories.dart';
+import 'package:mockito/mockito.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
 import 'riverpod_override_config.dart';
 
@@ -18,55 +21,15 @@ void main() {
   tearDown(() {
     container.dispose();
   });
-
-  test('TC_RegCitt_1 - Errore nominativo troppo corto', () async {
+  
+  test('TC_RegCitt_1 - Errore email non valida', () async {
     final repository = container.read(utenteRepositoryProvider);
 
     await expectLater(
       repository.registraCittadino(
-        nominativo: 'Lu',
-        email: 'luca@test.it',
-        password: 'Password123!',
-        numeroTelefono: '3331234567',
-      ),
-      throwsA(
-        isA<ArgumentError>().having(
-          (e) => e.message,
-          'message',
-          contains('Il nominativo deve essere tra 3 e 50 caratteri'),
-        ),
-      ),
-    );
-  });
-
-  test('TC_RegCitt_2 - Errore nominativo troppo lungo', () async {
-    final repository = container.read(utenteRepositoryProvider);
-
-    await expectLater(
-      repository.registraCittadino(
-        nominativo: 'L' * 60,
-        email: 'luca@test.it',
-        password: 'Password123!',
-        numeroTelefono: '3331234567',
-      ),
-      throwsA(
-        isA<ArgumentError>().having(
-          (e) => e.message,
-          'message',
-          contains('Il nominativo deve essere tra 3 e 50 caratteri'),
-        ),
-      ),
-    );
-  });
-
-  test('TC_RegCitt_3 - Errore email non valida', () async {
-    final repository = container.read(utenteRepositoryProvider);
-
-    await expectLater(
-      repository.registraCittadino(
-        nominativo: 'Luca Rossi',
-        email: 'luca.test.it',
-        password: 'Password123!',
+        nominativo: 'Mario Rossi',
+        email: 'emailnonvalida',
+        password: 'Password123',
         numeroTelefono: '3331234567',
       ),
       throwsA(
@@ -79,21 +42,64 @@ void main() {
     );
   });
 
-  test('TC_RegCitt_4 - Errore password troppo debole', () async {
+  /*test('TC_RegCitt_2 - Errore email già presente', () async {
+    final repository = container.read(utenteRepositoryProvider);
+
+    final mockAuth = container.read(firebaseAuthProvider) as MockFirebaseAuth;
+    
+    whenCalling(mockAuth.createUserWithEmailAndPassword(
+      email: 'mario.rossi@example.com',
+      password: 'Password123',
+    )).thenThrow(FirebaseAuthException(code: 'email-already-in-use'));
+
+    await expectLater(
+      repository.registraCittadino(
+        nominativo: 'Mario Rossi',
+        email: 'mario.rossi@example.com',
+        password: 'Password123',
+        numeroTelefono: '3331234567',
+      ),
+      throwsA(
+        isA<FirebaseAuthException>()
+      ),
+    );
+  });*/
+
+test('TC_RegCitt_3 - Errore password troppo corta', () async {
     final repository = container.read(utenteRepositoryProvider);
 
     await expectLater(
       repository.registraCittadino(
         nominativo: 'Luca Rossi',
         email: 'luca@test.it',
-        password: '123',
+        password: 'Pass1',
         numeroTelefono: '3331234567',
       ),
       throwsA(
         isA<ArgumentError>().having(
           (e) => e.message,
           'message',
-          contains('La password deve contenere'),
+          'La password deve contenere almeno 8 caratteri',
+        ),
+      ),
+    );
+  });
+
+  test('TC_RegCitt_4 - Errore nominativo vuoto', () async {
+    final repository = container.read(utenteRepositoryProvider);
+
+    await expectLater(
+      repository.registraCittadino(
+        nominativo: '',
+        email: 'luca@test.it',
+        password: 'Password123',
+        numeroTelefono: '3331234567',
+      ),
+      throwsA(
+        isA<ArgumentError>().having(
+          (e) => e.message,
+          'message',
+          'Il nominativo non può essere vuoto',
         ),
       ),
     );
@@ -106,8 +112,8 @@ void main() {
       repository.registraCittadino(
         nominativo: 'Luca Rossi',
         email: 'luca@test.it',
-        password: 'Password123!',
-        numeroTelefono: '33A123',
+        password: 'Password123',
+        numeroTelefono: '123456',
       ),
       throwsA(
         isA<ArgumentError>().having(
@@ -126,7 +132,7 @@ void main() {
       repository.registraCittadino(
         nominativo: 'Luca Rossi',
         email: 'luca@test.it',
-        password: 'Password123!',
+        password: 'Password123',
         numeroTelefono: '3331234567',
       ),
       completes,
