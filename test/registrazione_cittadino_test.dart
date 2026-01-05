@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:resqpet/di/firebase.dart';
 import 'package:resqpet/di/repositories.dart';
-import 'package:mockito/mockito.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:mock_exceptions/mock_exceptions.dart';
 
 import 'riverpod_override_config.dart';
 
@@ -42,15 +41,24 @@ void main() {
     );
   });
 
-  /*test('TC_RegCitt_2 - Errore email già presente', () async {
+  test('TC_RegCitt_2 - Errore email già presente', () async {
     final repository = container.read(utenteRepositoryProvider);
 
     final mockAuth = container.read(firebaseAuthProvider) as MockFirebaseAuth;
-    
-    whenCalling(mockAuth.createUserWithEmailAndPassword(
-      email: 'mario.rossi@example.com',
-      password: 'Password123',
-    )).thenThrow(FirebaseAuthException(code: 'email-already-in-use'));
+    whenCalling(
+      Invocation.method(
+        #createUserWithEmailAndPassword,
+        null,
+        {
+          #email: 'mario.rossi@example.com',
+          #password: 'Password123',
+        },
+      ),
+    )
+    .on(mockAuth)
+    .thenThrow(
+      FirebaseAuthException(code: 'email-already-in-use'),
+    );
 
     await expectLater(
       repository.registraCittadino(
@@ -61,11 +69,16 @@ void main() {
       ),
       throwsA(
         isA<FirebaseAuthException>()
+          .having(
+            (e) => e.code, 
+            "code",
+            "email-already-in-use"
+          )
       ),
     );
-  });*/
+  });
 
-test('TC_RegCitt_3 - Errore password troppo corta', () async {
+  test('TC_RegCitt_3 - Errore password troppo corta', () async {
     final repository = container.read(utenteRepositoryProvider);
 
     await expectLater(
