@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:resqpet/di/firebase.dart';
 import 'package:resqpet/di/repositories.dart';
+import 'package:resqpet/models/utente.dart';
 
 import 'riverpod_override_config.dart';
 
@@ -32,6 +33,7 @@ void main() {
           'email': 'mockuser@resqpet.it',
           'dataCreazione': Timestamp.now(),
           'numeroTelefono': '3331234567',
+          'tipo': TipoUtente.cittadino.toFirestore()
         });
   });
 
