@@ -80,7 +80,7 @@ class _SegnalazioniMapScreenState extends ConsumerState<SegnalazioniMapScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mapp Segnalazioni"),
+        title: Text("Mappa Segnalazioni"),
       ),
       body: Stack(
         children: [
