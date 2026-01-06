@@ -33,6 +33,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'ResQPet',
       theme: resqpetTheme,
       routerConfig: ref.read(routerProvider)
