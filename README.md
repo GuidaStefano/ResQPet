@@ -6,6 +6,13 @@ ResQPet è un’applicazione mobile progettata per centralizzare, tracciare e re
 L’obiettivo principale è superare l’uso di strumenti non strutturati come social network o app di messaggistica, offrendo una piattaforma unica, 
 affidabile e tracciabile a supporto di cittadini, soccorritori e strutture di accoglienza.
 
+<div style="display: flex; justify-content: space-between;">
+  <img src="readme_images/img1.jpeg" width="200" alt="" />
+  <img src="readme_images/img2.jpeg" width="200" alt="" />
+  <img src="readme_images/img3.jpeg" width="200" alt="" />
+  <img src="readme_images/img4.jpeg" width="200" alt="" />
+</div>
+
 ### 📌 Problema affrontato
 
 Attualmente:
