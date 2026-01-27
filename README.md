@@ -1,3 +1,9 @@
+
+[![Flutter Release Build](https://github.com/GuidaStefano/ResQPet/actions/workflows/flutter-build-release.yml/badge.svg)](https://github.com/GuidaStefano/ResQPet/actions/workflows/flutter-build-release.yml)
+[![Flutter Static Analysis](https://github.com/GuidaStefano/ResQPet/actions/workflows/flutter-static-analysis.yml/badge.svg)](https://github.com/GuidaStefano/ResQPet/actions/workflows/flutter-static-analysis.yml)
+[![Flutter Test Runner](https://github.com/GuidaStefano/ResQPet/actions/workflows/flutter-test-runner.yml/badge.svg)](https://github.com/GuidaStefano/ResQPet/actions/workflows/flutter-test-runner.yml)
+
+
 # 🐾 ResQPet
 
 ResQPet è un’applicazione mobile progettata per centralizzare, tracciare e rendere sicure le attività di 
