@@ -107,8 +107,8 @@ Questa architettura consente un’elevata scalabilità, affidabilità e una gest
 
 **Clona il repository e posizionati nella directory del progetto:**
 ```bash
-git clone https://github.com/your-username/resqpet.git
-cd resqpet
+https://github.com/GuidaStefano/ResQPet.git
+cd ResQPet
 ```
 
 **Installa le dipendenze:**
